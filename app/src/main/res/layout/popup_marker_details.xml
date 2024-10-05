@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/markerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Marker Name"
+        android:textSize="18sp"/>
+
+    <ImageView
+        android:id="@+id/markerImage"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:contentDescription="filler"/>
+
+    <TextView
+        android:id="@+id/voteCountTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Votes: 0"
+        android:textSize="16sp"/>
+
+    <Button
+        android:id="@+id/upvoteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upvote"/>
+
+    <Button
+        android:id="@+id/downvoteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Downvote"/>
+
+    <Button
+        android:id="@+id/editButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit"/>
+
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete"/>
+
+    <Button
+        android:id="@+id/closeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Close"
+        android:layout_marginTop="16dp"/>
+</LinearLayout>
