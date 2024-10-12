@@ -1,59 +1,178 @@
 package com.mco.frame
 
+import MarkerData
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), OnMapReadyCallback {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [MapFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class MapFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var googleMap: GoogleMap? = null
+    private var isMarkerAdderModeEnabled = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    // Access the same SharedViewModel as the activity
+    //private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_map, container, false)
+        val view = inflater.inflate(R.layout.fragment_map, container, false)
+        val mapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+
+        // Find the marker adder mode button and set the click listener
+        val markerAdderButton: Button = view.findViewById(R.id.markerAdderModeButton)
+        markerAdderButton.setOnClickListener {
+            isMarkerAdderModeEnabled = !isMarkerAdderModeEnabled
+            if (isMarkerAdderModeEnabled) {
+                markerAdderButton.text = "Done"
+            } else {
+                markerAdderButton.text = "+"
+            }
+        }
+
+        //sharedViewModel.logMarkerData()
+
+        return view
+    }
+
+    override fun onMapReady(map: GoogleMap) {
+        googleMap = map
+
+        Log.d("MapFragment", "Loading markers from ViewModel...")
+
+        sharedViewModel.logMarkerData()
+
+        val allMarkerData = sharedViewModel.getAllMarkerData()
+        allMarkerData.forEach { markerData ->
+            addMarker(markerData) // Call the addMarker function
+        }
+
+        googleMap?.setOnMapClickListener { latLng ->
+            if (isMarkerAdderModeEnabled) {
+                // Create a new marker and its corresponding data
+                //val markerOptions = MarkerOptions().position(latLng).title("New Marker")
+                //val marker = googleMap?.addMarker(markerOptions)
+
+                val markerData = MarkerData(
+                    name = "New Marker",
+                    imageResId = R.drawable.placeholder, // Placeholder image
+                    voteCount = 0,
+                    lat = latLng.latitude,
+                    lng = latLng.longitude,
+                    markerID = ""
+                )
+
+                addMarker(markerData)
+                sharedViewModel.addMarkerData(markerData.markerID, markerData)
+            } else {
+                // Move the map camera to the clicked location if marker adder mode is off
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+            }
+        }
+
+        googleMap?.setOnMarkerClickListener { marker ->
+            val markerData = marker.tag as? MarkerData
+            markerData?.let {
+                showMarkerPopup(marker, it)
+            }
+            true
+        }
+    }
+
+    private fun addMarker(markerData: MarkerData) {
+        // Create MarkerOptions using the data from markerData
+        val markerOptions = MarkerOptions()
+            .position(LatLng(markerData.lat, markerData.lng))
+            .title(markerData.name)
+
+        // Add the marker to the Google Map
+        val marker = googleMap?.addMarker(markerOptions)
+
+        // Update the marker's tag with the associated MarkerData
+        marker?.tag = markerData
+
+        // Update the markerID after it has been created
+        markerData.markerID = marker?.id ?: ""
+    }
+
+    private fun showMarkerPopup(marker: Marker, markerData: MarkerData) {
+        // Custom popup dialog with the marker's name, image, and action buttons
+        val popupView = LayoutInflater.from(context).inflate(R.layout.popup_marker_details, null)
+        val popupDialog = AlertDialog.Builder(requireContext())
+            .setView(popupView)
+            .create()
+
+        val markerNameTextView = popupView.findViewById<TextView>(R.id.markerName)
+        val markerImageView = popupView.findViewById<ImageView>(R.id.markerImage)
+        val voteCountTextView = popupView.findViewById<TextView>(R.id.voteCount)
+        val upvoteButton = popupView.findViewById<Button>(R.id.upvoteButton)
+        val downvoteButton = popupView.findViewById<Button>(R.id.downvoteButton)
+        val editButton = popupView.findViewById<Button>(R.id.editButton)
+        val deleteButton = popupView.findViewById<Button>(R.id.deleteButton)
+
+        // Set initial data
+        markerNameTextView.text = markerData.name
+        markerImageView.setImageResource(markerData.imageResId)
+        voteCountTextView.text = markerData.voteCount.toString()
+
+        // Handle upvote
+        upvoteButton.setOnClickListener {
+            markerData.voteCount++
+            voteCountTextView.text = markerData.voteCount.toString()
+        }
+
+        // Handle downvote
+        downvoteButton.setOnClickListener {
+            markerData.voteCount--
+            voteCountTextView.text = markerData.voteCount.toString()
+        }
+
+        // Handle edit marker name
+        editButton.setOnClickListener {
+            val editText = EditText(context)
+            AlertDialog.Builder(requireContext())
+                .setTitle("Edit Marker Name")
+                .setView(editText)
+                .setPositiveButton("Save") { dialog, _ ->
+                    markerData.name = editText.text.toString()
+                    markerNameTextView.text = markerData.name
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
+
+        // Handle delete marker
+        deleteButton.setOnClickListener {
+            marker.remove()  // Remove the marker from the map
+            sharedViewModel.removeMarkerData(marker.id)  // Remove the data from the shared ViewModel
+            popupDialog.dismiss()
+        }
+
+        popupDialog.show()
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MapFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MapFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        fun newInstance(sharedViewModel: SharedViewModel): MapFragment {
+            return MapFragment(sharedViewModel)
+        }
     }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,15 +21,17 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLayoutBinding
 
+    private val sharedViewModel: SharedViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        replaceFragment(MapFragment())
+        replaceFragment(MapFragment(sharedViewModel))
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){
-                R.id.Maps -> replaceFragment(MapFragment())
+                R.id.Maps -> replaceFragment(MapFragment(sharedViewModel))
                 R.id.Profile -> replaceFragment(ProfileFragment())
 
                 else ->{
@@ -44,6 +47,9 @@ class MainActivity : AppCompatActivity() {
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frameLayout,fragment)
         fragmentTransaction.commit()
+
+        // Call log function to print marker data
+        //sharedViewModel.logMarkerData()
     }
 }
 

@@ -1,7 +1,12 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
 }
+
+val mapAPIKey = gradleLocalProperties(rootDir, providers)
+    .getProperty("MAPS_API_KEY", "")
 
 android {
     namespace = "com.mco.frame"
@@ -18,6 +23,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        resValue(
+            "string",
+            "mapAPIKey",
+            mapAPIKey
+        )
     }
 
     buildTypes {
@@ -54,6 +65,13 @@ android {
 dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.2.0-beta01")
     implementation ("com.google.android.material:material:1.5.0")
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+    implementation("androidx.fragment:fragment-ktx:1.6.1")
+
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
