@@ -1,14 +1,19 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
 }
 
+val mapAPIKey = gradleLocalProperties(rootDir, providers)
+    .getProperty("MAPS_API_KEY", "")
+
 android {
-    namespace = "com.example.accessability_mob_app"
+    namespace = "com.mco.frame"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.accessability_mob_app"
+        applicationId = "com.mco.frame"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -18,6 +23,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        resValue(
+            "string",
+            "mapAPIKey",
+            mapAPIKey
+        )
     }
 
     buildTypes {
@@ -37,8 +48,10 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
-        compose = true
+        compose = true;
+        viewBinding = true
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
@@ -50,6 +63,14 @@ android {
 }
 
 dependencies {
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0-beta01")
+    implementation ("com.google.android.material:material:1.5.0")
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+    implementation("androidx.fragment:fragment-ktx:1.6.1")
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -59,8 +80,11 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+<<<<<<< HEAD
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
+=======
+>>>>>>> origin/main
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

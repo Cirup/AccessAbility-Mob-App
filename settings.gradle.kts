@@ -19,5 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AccessAbility-Mob-App"
+rootProject.name = "Frame"
 include(":app")
+ 

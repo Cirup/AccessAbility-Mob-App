@@ -1,4 +1,4 @@
-package com.example.accessability_mob_app.ui.theme
+package com.mco.frame.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -34,7 +34,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun AccessAbilityMobAppTheme(
+fun FrameTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
