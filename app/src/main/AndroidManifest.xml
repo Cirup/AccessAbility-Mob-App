@@ -28,21 +28,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<<<<<<< HEAD
+        <!--
         <activity
             android:name=".MapActivity"
             android:exported="true"
             android:label="Map Page"
             android:theme="@style/Theme.AccessAbilityMobApp" />
+         -->
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-=======
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/mapAPIKey" />
->>>>>>> origin/main
     </application>
 
 </manifest>
