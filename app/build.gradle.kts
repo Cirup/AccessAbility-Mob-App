@@ -85,6 +85,11 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.appcompat)
+<<<<<<< HEAD
+=======
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.play.services.location)
+>>>>>>> origin/main
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -27,7 +27,7 @@ class SharedViewModel : ViewModel() {
     fun logMarkerData() {
         Log.d("SharedViewModel", "Marker Data Map:")
         _markerDataMap.value?.forEach { (id, data) ->
-            Log.d("SharedViewModel", "ID: $id, Name: ${data.name}, Votes: ${data.voteCount}, Lat: ${data.lat}, Lng: ${data.lng}")
+            Log.d("SharedViewModel", "ID: $id, Name: ${data.name}, Votes: ${data.rating}, Lat: ${data.lat}, Lng: ${data.lng}")
         }
     }
     fun getMarkerData(markerId: String): MarkerData? {
