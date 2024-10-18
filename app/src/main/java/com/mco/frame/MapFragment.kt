@@ -35,8 +35,8 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
     private var googleMap: GoogleMap? = null
     private var isMarkerAdderModeEnabled = false
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
-    private var allMarkerData: List<MarkerData> = emptyList()
-    private val markers: MutableList<Marker> = mutableListOf()  // List to hold markers
+    private var allMarkerData: List<MarkerData> = emptyList() // holds marker data (like their likes and etc)
+    private val markers: MutableList<Marker> = mutableListOf()  // List to hold markers (google api marker)
     // Access the same SharedViewModel as the activity
     //private val sharedViewModel: SharedViewModel by activityViewModels()
 
@@ -96,6 +96,8 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
         // Check if location permissions are granted
         requestLocationPermission()
         /*
+        Code to supposedly move camera to current location after giving permission but not working for now
+        will debug later on
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -200,6 +202,7 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
 
 
 
+    // moves camera to current location
     fun enableUserLocation() {
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -220,6 +223,7 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
         }
     }
 
+    // pop up for ask request of permission
     private fun requestLocationPermission() {
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
