@@ -58,8 +58,4 @@ class MainActivity : AppCompatActivity() {
         // Call log function to print marker data
         //sharedViewModel.logMarkerData()
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/main

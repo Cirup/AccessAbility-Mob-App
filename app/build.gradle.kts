@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
-val mapAPIKey = gradleLocalProperties(rootDir, providers)
+val mapAPIKey = gradleLocalProperties(rootDir)
     .getProperty("MAPS_API_KEY", "")
 
 android {
@@ -48,12 +48,12 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
-        compose = true;
+        compose = true
         viewBinding = true
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.1" // Keep this consistent with Kotlin version
     }
     packaging {
         resources {
@@ -64,18 +64,13 @@ android {
 
 dependencies {
     implementation(libs.androidx.appcompat)
-    // For loading and tinting drawables on older versions of the platform
-    implementation(libs.androidx.appcompat.resources)
-
-    implementation(libs.androidx.constraintlayout.v220beta01)
-    implementation (libs.material)
+    implementation(libs.androidx.appcompat.resources) // Keep the resource helper
+    implementation(libs.androidx.constraintlayout.v220beta01) // Consider using stable versions
+    implementation(libs.material)
     implementation(libs.play.services.maps.v1900)
-
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.fragment.ktx)
-
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -84,12 +79,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.appcompat)
-<<<<<<< HEAD
-=======
-    implementation(libs.androidx.constraintlayout)
     implementation(libs.play.services.location)
->>>>>>> origin/main
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
