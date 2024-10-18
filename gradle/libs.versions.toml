@@ -1,31 +1,22 @@
 [versions]
-agp = "8.1.2" # Updated to latest stable version of Android Gradle Plugin
-appcompatResources = "1.7.0"
-constraintlayoutVersion = "2.1.4" # Use stable version
-fragmentKtx = "1.6.1" # Latest stable for fragment KTX
+agp = "8.6.0"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
-junitVersion = "1.1.5" # Match with androidx-junit
-espressoCore = "3.5.1" # Latest stable for espresso-core
-lifecycleRuntimeKtx = "2.6.1" # Latest stable for lifecycle-runtime-ktx
-activityCompose = "1.8.0" # Match with latest compose libraries
-composeBom = "2024.04.01" # Based on your setup
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+lifecycleRuntimeKtx = "2.8.6"
+activityCompose = "1.9.2"
+composeBom = "2024.04.01"
 appcompat = "1.7.0"
 maps = "18.1.0"
-constraintlayout = "2.1.4" # Consistent with androidx-constraintlayout
+constraintlayout = "2.1.4"
 material = "1.12.0"
-playServicesMaps = "19.0.0"
+activity = "1.9.2"
 playServicesLocation = "21.3.0"
 
 [libraries]
-androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompatResources" }
-androidx-appcompat-resources = { module = "androidx.appcompat:appcompat-resources", version.ref = "appcompatResources" }
-androidx-constraintlayout-v220beta01 = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayoutVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
-androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleRuntimeKtx" }
-androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleRuntimeKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -39,10 +30,14 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-material = { module = "com.google.android.material:material", version.ref = "material" }
-play-services-maps-v1900 = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+maps = { module = "com.google.android.gms:play-services-maps", version.ref = "maps" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+

@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
-val mapAPIKey = gradleLocalProperties(rootDir)
+val mapAPIKey = gradleLocalProperties(rootDir, providers)
     .getProperty("MAPS_API_KEY", "")
 
 android {
@@ -48,12 +48,12 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
-        compose = true
+        compose = true;
         viewBinding = true
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1" // Keep this consistent with Kotlin version
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {
@@ -63,14 +63,15 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.appcompat.resources) // Keep the resource helper
-    implementation(libs.androidx.constraintlayout.v220beta01) // Consider using stable versions
-    implementation(libs.material)
-    implementation(libs.play.services.maps.v1900)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.androidx.fragment.ktx)
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0-beta01")
+    implementation ("com.google.android.material:material:1.5.0")
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+    implementation("androidx.fragment:fragment-ktx:1.6.1")
+
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -79,8 +80,10 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.activity)
     implementation(libs.play.services.location)
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
