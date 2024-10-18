@@ -1,5 +1,6 @@
 package com.mco.frame
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,42 +16,50 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.Fragment
 import com.mco.frame.databinding.ActivityLayoutBinding
+import com.mco.frame.databinding.LoginpageBinding
+import com.mco.frame.databinding.RegisterpageBinding
 import com.mco.frame.ui.theme.FrameTheme
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityLayoutBinding
+    private lateinit var binding: LoginpageBinding
 
     private val sharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLayoutBinding.inflate(layoutInflater)
+        binding = LoginpageBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        replaceFragment(MapFragment(sharedViewModel))
+//        replaceFragment(MapFragment(sharedViewModel))
 
-        binding.bottomNavigationView.setOnItemSelectedListener {
-            when(it.itemId){
-                R.id.Maps -> replaceFragment(MapFragment(sharedViewModel))
-                R.id.Profile -> replaceFragment(ProfileFragment())
 
-                else ->{
 
-                }
-            }
-            true
+        //login button on click listener
+        login()
+        //create account button on click listener
+        createAccount()
+    }
+
+    private fun createAccount(){
+        val textView = binding.registerHref
+
+        //when clicked, it will lead to the register page
+        textView.setOnClickListener{
+            val intent = Intent(this, CreateAccountActivity::class.java)
+            startActivity(intent)
         }
     }
 
-    private fun replaceFragment(fragment: Fragment){
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.frameLayout,fragment)
-        fragmentTransaction.commit()
+    private fun login(){
+        val button = binding.loginBtn
 
-        // Call log function to print marker data
-        //sharedViewModel.logMarkerData()
+        button.setOnClickListener{
+            val intent = Intent(this, MapActivity::class.java)
+            startActivity(intent)
+        }
     }
+
+
 }
 
 @Composable
