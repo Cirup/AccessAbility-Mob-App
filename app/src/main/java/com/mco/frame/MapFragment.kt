@@ -16,6 +16,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -143,26 +144,62 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
 
         googleMap?.setOnMapClickListener { latLng ->
             if (isMarkerAdderModeEnabled) {
-                // Create a new marker and its corresponding data
-                //val markerOptions = MarkerOptions().position(latLng).title("New Marker")
-                //val marker = googleMap?.addMarker(markerOptions)
+                // Inflate and show the dialog for adding marker details
+                val dialogView = layoutInflater.inflate(R.layout.add_marker_details_pop_up, null)
+                val etMarkerName = dialogView.findViewById<EditText>(R.id.et_marker_name)
+                val rgRating = dialogView.findViewById<RadioGroup>(R.id.rg_rating)
+                val etNote = dialogView.findViewById<EditText>(R.id.et_note)
 
-                val markerData = MarkerData(
-                    name = "New Marker",
-                    imageResId = R.drawable.placeholder, // Placeholder image
-                    rating = 0,
-                    lat = latLng.latitude,
-                    lng = latLng.longitude,
-                    markerID = ""
-                )
+                // Create an AlertDialog
+                val dialog = AlertDialog.Builder(requireContext())
+                    .setView(dialogView)
+                    .setCancelable(false) // Prevent dismiss on outside touch
+                    .create()
 
-                addMarker(markerData)
-                sharedViewModel.addMarkerData(markerData.markerID, markerData)
+                // Set up the Confirm button listener
+                dialogView.findViewById<Button>(R.id.btn_confirm).setOnClickListener {
+                    val markerName = etMarkerName.text.toString().ifBlank { "New Marker" }
+                    val selectedRatingId = rgRating.checkedRadioButtonId
+                    val rating = when (selectedRatingId) {
+                        R.id.rb_star_1 -> 1
+                        R.id.rb_star_2 -> 2
+                        R.id.rb_star_3 -> 3
+                        R.id.rb_star_4 -> 4
+                        R.id.rb_star_5 -> 5
+                        else -> 0 // Default rating if none is selected
+                    }
+                    val note = etNote.text.toString()
+
+                    // Create MarkerData and add it
+                    val markerData = MarkerData(
+                        name = markerName,
+                        imageResId = R.drawable.placeholder, // Placeholder image
+                        rating = rating,
+                        lat = latLng.latitude,
+                        lng = latLng.longitude,
+                        markerID = "",
+                        notes = listOf(note) // Add the note to MarkerData
+                    )
+
+                    // Add marker and save to sharedViewModel
+                    addMarker(markerData)
+                    sharedViewModel.addMarkerData(markerData.markerID, markerData)
+
+                    dialog.dismiss() // Close the dialog after confirming
+                }
+
+                // Set up the Cancel button listener
+                dialogView.findViewById<Button>(R.id.btn_cancel).setOnClickListener {
+                    dialog.dismiss() // Close the dialog without adding a marker
+                }
+
+                dialog.show()
             } else {
                 // Move the map camera to the clicked location if marker adder mode is off
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLng(latLng))
             }
         }
+
 
         googleMap?.setOnMarkerClickListener { marker ->
             val markerData = marker.tag as? MarkerData
