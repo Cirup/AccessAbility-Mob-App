@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -16,6 +17,19 @@
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <!-- Toggle Marker Adder Mode -->
+    <EditText
+        android:id="@+id/searchMarkerEditText"
+        android:layout_width="307dp"
+        android:layout_height="47dp"
+        android:layout_margin="16dp"
+        android:layout_marginTop="16dp"
+        android:hint="Search Marker..."
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Button
         android:id="@+id/markerAdderModeButton"
         android:layout_width="55dp"
@@ -26,5 +40,35 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Zoom In Button -->
+    <Button
+        android:id="@+id/zoomInButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@android:color/white"
+        android:text="+"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="24sp"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <!-- Zoom Out Button -->
+    <Button
+        android:id="@+id/zoomOutButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@android:color/white"
+        android:text="-"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="24sp"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/zoomInButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
