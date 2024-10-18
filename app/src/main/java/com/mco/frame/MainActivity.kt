@@ -52,19 +52,3 @@ class MainActivity : AppCompatActivity() {
         //sharedViewModel.logMarkerData()
     }
 }
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FrameTheme {
-        Greeting("Android")
-    }
-}
