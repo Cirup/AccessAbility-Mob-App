@@ -23,6 +23,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -31,6 +33,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.mco.frame.databinding.BottomDialogBinding
 
 class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), OnMapReadyCallback {
 
@@ -39,6 +43,10 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
     private var allMarkerData: List<MarkerData> = emptyList() // holds marker data (like their likes and etc)
     private val markers: MutableList<Marker> = mutableListOf()  // List to hold markers (google api marker)
+    private lateinit var bottomSheetDialog: BottomSheetDialog
+    private lateinit var dialogPostAdapter: DialogPostAdapter
+
+
     // Access the same SharedViewModel as the activity
     //private val sharedViewModel: SharedViewModel by activityViewModels()
 
@@ -316,64 +324,72 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
     }
 
     private fun showMarkerPopup(marker: Marker, markerData: MarkerData) {
-        // Custom popup dialog with the marker's name, image, and action buttons
-        val popupView = LayoutInflater.from(context).inflate(R.layout.popup_marker_details, null)
-        val popupDialog = AlertDialog.Builder(requireContext())
-            .setView(popupView)
-            .create()
+//      // Custom popup dialog with the marker's name, image, and action buttons
 
-        val markerNameTextView = popupView.findViewById<TextView>(R.id.markerName)
-        val markerImageView = popupView.findViewById<ImageView>(R.id.markerImage)
-        val ratingTextView = popupView.findViewById<TextView>(R.id.ratingCount)
-
-        // Update initial data
-        markerNameTextView.text = markerData.name
-        markerImageView.setImageResource(markerData.imageResId)
-        ratingTextView.text = "Rating: ${markerData.rating} / 5"
-
-        // Handle star rating
-        val starButtons = listOf(
-            popupView.findViewById<Button>(R.id.star1Button),
-            popupView.findViewById<Button>(R.id.star2Button),
-            popupView.findViewById<Button>(R.id.star3Button),
-            popupView.findViewById<Button>(R.id.star4Button),
-            popupView.findViewById<Button>(R.id.star5Button)
-        )
-
-        starButtons.forEachIndexed { index, button ->
-            button.setOnClickListener {
-                markerData.rating = index + 1  // Set rating to the button number (1-5)
-                ratingTextView.text = "Rating: ${markerData.rating} / 5"
-            }
+        bottomSheetDialog = BottomSheetDialog(requireContext())
+        val bottomSheetView = layoutInflater.inflate(R.layout.bottom_dialog, null)
+        bottomSheetDialog.setContentView(bottomSheetView)
+        // Set up the close button
+        val closeButton = bottomSheetView.findViewById<ImageView>(R.id.imageView)
+        closeButton.setOnClickListener {
+            bottomSheetDialog.dismiss()
         }
 
-        // Handle edit marker name
-        val editButton = popupView.findViewById<Button>(R.id.editButton)
-        editButton.setOnClickListener {
-            val editText = EditText(context)
-            AlertDialog.Builder(requireContext())
-                .setTitle("Edit Marker Name")
-                .setView(editText)
-                .setPositiveButton("Save") { dialog, _ ->
-                    markerData.name = editText.text.toString()
-                    markerNameTextView.text = markerData.name
-                    dialog.dismiss()
-                }
-                .setNegativeButton("Cancel", null)
-                .show()
-        }
+        // Set up RecyclerView
+        val recyclerView = bottomSheetView.findViewById<RecyclerView>(R.id.rcv_dialog)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        dialogPostAdapter = DialogPostAdapter(DataHelper.loadTweetData())
+        recyclerView.adapter = dialogPostAdapter
 
-        // Handle delete marker
-        val deleteButton = popupView.findViewById<Button>(R.id.deleteButton)
-        deleteButton.setOnClickListener {
-            marker.remove()  // Remove the marker from the map
-            sharedViewModel.removeMarkerData(marker.id)  // Remove the data from the shared ViewModel
-            markers.remove(marker)  // Remove the marker from the list of stored markers
-            popupDialog.dismiss()
-            Toast.makeText(requireContext(), "Marker deleted", Toast.LENGTH_SHORT).show()
-        }
+        bottomSheetDialog.show()
 
-        popupDialog.show()
+//        val popupView = LayoutInflater.from(context).inflate(R.layout.popup_marker_details, null)
+//        val popupDialog = AlertDialog.Builder(requireContext())
+//            .setView(popupView)
+//            .create()
+//
+//        val markerNameTextView = popupView.findViewById<TextView>(R.id.markerName)
+//        val markerImageView = popupView.findViewById<ImageView>(R.id.markerImage)
+//        val ratingTextView = popupView.findViewById<TextView>(R.id.ratingCount)
+//
+//        // Update initial data
+//        markerNameTextView.text = markerData.name
+//        markerImageView.setImageResource(markerData.imageResId)
+//        ratingTextView.text = "Rating: ${markerData.rating} / 5"
+//
+//        // Handle star rating
+//        val starButtons = listOf(
+//            popupView.findViewById<Button>(R.id.star1Button),
+//            popupView.findViewById<Button>(R.id.star2Button),
+//            popupView.findViewById<Button>(R.id.star3Button),
+//            popupView.findViewById<Button>(R.id.star4Button),
+//            popupView.findViewById<Button>(R.id.star5Button)
+//        )
+//
+//        starButtons.forEachIndexed { index, button ->
+//            button.setOnClickListener {
+//                markerData.rating = index + 1  // Set rating to the button number (1-5)
+//                ratingTextView.text = "Rating: ${markerData.rating} / 5"
+//            }
+//        }
+//
+//        // Handle edit marker name
+//        val editButton = popupView.findViewById<Button>(R.id.editButton)
+//        editButton.setOnClickListener {
+//            val editText = EditText(context)
+//            AlertDialog.Builder(requireContext())
+//                .setTitle("Edit Marker Name")
+//                .setView(editText)
+//                .setPositiveButton("Save") { dialog, _ ->
+//                    markerData.name = editText.text.toString()
+//                    markerNameTextView.text = markerData.name
+//                    dialog.dismiss()
+//                }
+//                .setNegativeButton("Cancel", null)
+//                .show()
+//        }
+//
+//        popupDialog.show()
     }
 
 }
