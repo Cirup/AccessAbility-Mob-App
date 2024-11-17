@@ -1,6 +1,5 @@
-package com.mco.frame.ui.theme
+package com.mco.accessability.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

@@ -3,17 +3,19 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+
+    id("com.google.gms.google-services")
 }
 
 val mapAPIKey = gradleLocalProperties(rootDir, providers)
     .getProperty("MAPS_API_KEY", "")
 
 android {
-    namespace = "com.mco.frame"
+    namespace = "com.mco.accessability"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.mco.frame"
+        applicationId = "com.mco.accessability"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -84,6 +86,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.activity)
     implementation(libs.play.services.location)
+    implementation(libs.firebase.firestore.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -91,4 +94,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+    implementation("com.google.firebase:firebase-analytics")
 }
