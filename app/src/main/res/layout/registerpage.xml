@@ -30,6 +30,19 @@
         android:textSize="16sp" />
 
     <EditText
+        android:id="@+id/usernameTv"
+        style="@style/inputBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:fontFamily="@font/noto_sans"
+        android:hint="@string/username"
+        android:inputType="textEmailAddress"
+        android:text=""
+        android:textColor="#666666"
+        android:textSize="16sp" />
+
+    <EditText
         android:id="@+id/emailHolder"
         style="@style/inputBox"
         android:layout_width="match_parent"
