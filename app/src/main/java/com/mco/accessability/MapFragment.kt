@@ -32,7 +32,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.mco.frame.databinding.BottomDialogBinding
+import com.mco.accessability.databinding.BottomDialogBinding
 
 class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), OnMapReadyCallback {
 
