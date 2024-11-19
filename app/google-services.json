@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "151703740872",
+    "project_id": "accessability-db",
+    "storage_bucket": "accessability-db.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:151703740872:android:9765bfd977cbdbd9fc20fd",
+        "android_client_info": {
+          "package_name": "com.mco.accessability"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBun2BoReD9K8bSBM5lWlH1yn4BIBRY14"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

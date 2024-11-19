@@ -1,4 +1,4 @@
-package com.mco.frame.ui.theme
+package com.mco.accessability.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

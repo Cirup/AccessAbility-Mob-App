@@ -1,8 +1,8 @@
-package com.mco.frame
+package com.mco.accessability
 
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.mco.frame.databinding.ItemNotesLayoutBinding
+import com.mco.accessability.databinding.ItemNotesLayoutBinding
 
 class DialogViewHolder(private val viewBinding: ItemNotesLayoutBinding): RecyclerView.ViewHolder(viewBinding.root)  {
     fun bindData(notes: AddedNotesModel){

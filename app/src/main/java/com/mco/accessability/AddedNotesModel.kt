@@ -1,4 +1,4 @@
-package com.mco.frame
+package com.mco.accessability
 
 data class AddedNotesModel(
     val author:String,

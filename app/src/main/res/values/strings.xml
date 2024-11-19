@@ -16,6 +16,7 @@
     <string name="login">LOGIN</string>
     <string name="login_to_your_account">LOGIN TO YOUR ACCOUNT</string>
     <string name="todo">TODO</string>
+    <string name="username">Username</string>
     <string name="rating_question"> How would you rate this place?</string>
     <string name="add_notes">Add Notes…</string>
 </resources>
