@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "813884876754",
+    "project_id": "accessibility-mob-app",
+    "storage_bucket": "accessibility-mob-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:813884876754:android:1362e41e0e3f3137320a0b",
+        "android_client_info": {
+          "package_name": "com.mco.frame"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2B-3bQghyOmjjBdJuPNb7PYC75yRovqU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,7 +1,6 @@
 package com.mco.frame
 
 import android.Manifest
-import MarkerData
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -46,9 +45,6 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var dialogPostAdapter: DialogPostAdapter
 
-
-    // Access the same SharedViewModel as the activity
-    //private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -177,8 +173,7 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
                         R.id.rb_star_5 -> 5
                         else -> 0 // Default rating if none is selected
                     }
-                    val note = etNote.text.toString()
-
+                    
                     // Create MarkerData and add it
                     val markerData = MarkerData(
                         name = markerName,
@@ -187,7 +182,13 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
                         lat = latLng.latitude,
                         lng = latLng.longitude,
                         markerID = "",
-                        notes = listOf(note) // Add the note to MarkerData
+                        notes = listOf(
+                            AddedNotesModel(
+                                author = "Default User",
+                                note = "YES YES EYS",
+                                imageId = R.drawable.myimage
+                            )
+                        ) // Add the note to MarkerData
                     )
 
                     // Add marker and save to sharedViewModel

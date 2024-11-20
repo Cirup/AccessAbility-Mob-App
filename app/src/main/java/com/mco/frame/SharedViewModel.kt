@@ -1,6 +1,5 @@
 package com.mco.frame
 
-import MarkerData
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,7 +8,6 @@ import androidx.lifecycle.ViewModel
 class SharedViewModel : ViewModel() {
 
     private val _markerDataMap = MutableLiveData<MutableMap<String, MarkerData>>()
-    val markerDataMap: MutableMap<String, MarkerData> = mutableMapOf()
     init {
         _markerDataMap.value = mutableMapOf()
     }

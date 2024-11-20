@@ -39,8 +39,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 //        replaceFragment(MapFragment(sharedViewModel))
 
-
-
         //login button on click listener
         login()
         //create account button on click listener
@@ -66,21 +64,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FrameTheme {
-        Greeting("Android")
-    }
 }
