@@ -2,14 +2,15 @@ package com.mco.accessability
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.google.firebase.auth.FirebaseAuth
 import com.mco.accessability.databinding.LoginpageBinding
-import com.mco.accessability.ui.theme.FrameTheme
+import com.google.firebase.database.*
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,12 +22,53 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val db = FirebaseFirestore.getInstance()
         binding = LoginpageBinding.inflate(layoutInflater)
+
         setContentView(binding.root)
-//        replaceFragment(MapFragment(sharedViewModel))
+        binding.registerHref.setOnClickListener {
+            // Start the Register Activity
+            finish()
+        }
+
+        binding.loginBtn.setOnClickListener {
+
+            // ToDO change email to username
+            val username = binding.emailHolder.text.toString()
+            val password = binding.passHolder.text.toString()
+
+            if (username.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            db.collection("users")
+                .whereEqualTo("username", username)
+                .whereEqualTo("password", password)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (documents.isEmpty) {
+                        Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show()
+                    } else {
+                        // User authenticated successfully
+                        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
+                        // Navigate to the next activity or home screen
+                        val intent = Intent(this, MapActivity::class.java)
+                        startActivity(intent)
+
+                        //startActivity(Intent(this, HomeActivity::class.java))
+                        // finish()
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.e("LoginActivity", "Error logging in", e)
+                    Toast.makeText(this, "An error occurred. Please try again.", Toast.LENGTH_SHORT).show()
+                }
+        }
+        //replaceFragment(MapFragment(sharedViewModel))
 
         //login button on click listener
-        login()
+        //login()
         //create account button on click listener
         createAccount()
     }
@@ -51,20 +93,4 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FrameTheme {
-        Greeting("Android")
-    }
 }

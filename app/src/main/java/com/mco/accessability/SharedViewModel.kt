@@ -1,6 +1,5 @@
 package com.mco.accessability
 
-import MarkerData
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,7 +25,7 @@ class SharedViewModel : ViewModel() {
     fun logMarkerData() {
         Log.d("SharedViewModel", "Marker Data Map:")
         _markerDataMap.value?.forEach { (id, data) ->
-            Log.d("SharedViewModel", "ID: $id, Name: ${data.name}, Votes: ${data.rating}, Lat: ${data.lat}, Lng: ${data.lng}")
+            Log.d("SharedViewModel", "ID: $id, Name: ${data.nameOfPlace}, Votes: ${data.rating}, Lat: ${data.lat}, Lng: ${data.lng}")
         }
     }
     fun getMarkerData(markerId: String): MarkerData? {
