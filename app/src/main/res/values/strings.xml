@@ -19,4 +19,6 @@
     <string name="username">Username</string>
     <string name="rating_question"> How would you rate this place?</string>
     <string name="add_notes">Add Notes…</string>
+    <string name="search_here">Search here</string>
+    <string name="search_markers_here">Search markers here</string>
 </resources>
