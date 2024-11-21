@@ -59,13 +59,13 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
         mapFragment.getMapAsync(this)
 
         // Find the marker adder mode button and set the click listener
-        val markerAdderButton: Button = view.findViewById(R.id.markerAdderModeButton)
+        val markerAdderButton: ImageView = view.findViewById(R.id.markerAdderModeButton)
         markerAdderButton.setOnClickListener {
             isMarkerAdderModeEnabled = !isMarkerAdderModeEnabled
             if (isMarkerAdderModeEnabled) {
-                markerAdderButton.text = "Done"
+                markerAdderButton.setImageResource(R.drawable.cancel_add_marker)
             } else {
-                markerAdderButton.text = "+"
+                markerAdderButton.setImageResource(R.drawable.rate_location_icon)
             }
         }
 
@@ -105,9 +105,12 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
 
         // Check if location permissions are granted
         requestLocationPermission()
+
+
         /*
         Code to supposedly move camera to current location after giving permission but not working for now
         will debug later on
+         */
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -126,7 +129,7 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
                 }
         } else {
             requestLocationPermission()
-        }*/
+        }
 
         Log.d("MapFragment", "Loading markers from ViewModel...")
 
@@ -218,6 +221,7 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
             true
         }
     }
+
 
     private fun searchMarker(query: String) {
         allMarkerData = sharedViewModel.getAllMarkerData()

@@ -6,65 +6,68 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Toggle Marker Adder Mode -->
+
+
+    <!-- Zoom In Button -->
+
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-    <!-- Toggle Marker Adder Mode -->
-
+        app:layout_constraintVertical_bias="0.0" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="414dp"
+        android:layout_height="77dp"
+        android:background="#FFFFFF"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="400dp"
+            android:layout_height="39dp"
             android:layout_weight="1"
-            android:background="#ffffff"
-            app:cardCornerRadius="25dp">
-
-            <EditText
-                android:id="@+id/searchMarkerEditText"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginLeft="10dp"
-                android:background="@android:color/transparent"
-                android:gravity="center_vertical"
-                android:hint="@string/search_markers_here"
-                android:inputType="text"
-                android:minHeight="48dp"
-                android:padding="12dp"
-                android:textColor="#000000"
-                android:textColorHint="#808080"
-                android:textSize="16sp" />
-
-        </androidx.cardview.widget.CardView>
-
-        <Button
-            android:id="@+id/markerAdderModeButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginRight="15dp"
-            android:gravity="center_vertical"
-            android:text="+"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            app:srcCompat="@drawable/accessability_icon" />
     </LinearLayout>
 
-    <!-- Zoom In Button -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="377dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="92dp"
+        android:layout_weight="1"
+        android:background="#ffffff"
+        app:cardCornerRadius="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/searchMarkerEditText"
+            android:layout_width="387dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="10dp"
+            android:background="@android:color/transparent"
+            android:gravity="center_vertical"
+            android:hint="@string/search_markers_here"
+            android:inputType="text"
+            android:minHeight="48dp"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:textColorHint="#808080"
+            android:textSize="16sp" />
+
+    </androidx.cardview.widget.CardView>
 
     <Button
         android:id="@+id/zoomInButton"
@@ -94,5 +97,19 @@
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/zoomInButton" />
+
+    <ImageView
+        android:id="@+id/markerAdderModeButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:padding="10dp"
+        android:layout_marginBottom="84dp"
+        android:src="@drawable/rate_location_icon"
+        android:background="@drawable/rate_location_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.955"
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
