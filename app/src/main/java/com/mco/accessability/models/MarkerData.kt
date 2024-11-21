@@ -1,3 +1,5 @@
+package com.mco.accessability.models
+
 data class MarkerData(
     var markerID: String,  // Unique ID for the marker
     var name: String,       // Name of the marker

@@ -7,7 +7,7 @@ plugins {
     id("com.google.gms.google-services")
 }
 
-val mapAPIKey = gradleLocalProperties(rootDir, providers)
+val mapAPIKey: String = gradleLocalProperties(rootDir, providers)
     .getProperty("MAPS_API_KEY", "")
 
 android {
@@ -50,7 +50,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
-        compose = true;
+        compose = true
         viewBinding = true
     }
 
@@ -65,13 +65,13 @@ android {
 }
 
 dependencies {
-    implementation("androidx.constraintlayout:constraintlayout:2.2.0-beta01")
-    implementation ("com.google.android.material:material:1.5.0")
-    implementation("com.google.android.gms:play-services-maps:19.0.0")
+    implementation(libs.androidx.constraintlayout.v220beta01)
+    implementation (libs.material.v150)
+    implementation(libs.play.services.maps.v1900)
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
-    implementation("androidx.fragment:fragment-ktx:1.6.1")
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.fragment.ktx)
 
 
     implementation(libs.androidx.core.ktx)
@@ -95,6 +95,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
-    implementation("com.google.firebase:firebase-analytics")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
 }

@@ -1,7 +1,7 @@
-package com.mco.accessability
+package com.mco.accessability.fragment
 
 import android.Manifest
-import MarkerData
+import com.mco.accessability.models.MarkerData
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -16,7 +16,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RadioGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
@@ -32,7 +31,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.mco.accessability.databinding.BottomDialogBinding
+import com.mco.accessability.DataHelper
+import com.mco.accessability.R
+import com.mco.accessability.SharedViewModel
+import com.mco.accessability.adapter.DialogPostAdapter
 
 class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), OnMapReadyCallback {
 
@@ -177,7 +179,7 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
                     }
                     val note = etNote.text.toString()
 
-                    // Create MarkerData and add it
+                    // Create com.mco.accessability.models.MarkerData and add it
                     val markerData = MarkerData(
                         name = markerName,
                         imageResId = R.drawable.placeholder, // Placeholder image
@@ -185,7 +187,7 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
                         lat = latLng.latitude,
                         lng = latLng.longitude,
                         markerID = "",
-                        notes = listOf(note) // Add the note to MarkerData
+                        notes = listOf(note) // Add the note to com.mco.accessability.models.MarkerData
                     )
 
                     // Add marker and save to sharedViewModel
@@ -311,7 +313,7 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
         // Add the marker to the Google Map
         val marker = googleMap?.addMarker(markerOptions)
 
-        // Update the marker's tag with the associated MarkerData
+        // Update the marker's tag with the associated com.mco.accessability.models.MarkerData
         marker?.tag = markerData
 
         // Update the markerID after it has been created
