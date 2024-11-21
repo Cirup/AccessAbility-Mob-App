@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -97,6 +99,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun showAddMarkerDialog(latLng: LatLng) {
+        val sharedPreferences = requireActivity().getSharedPreferences("user_prefs", AppCompatActivity.MODE_PRIVATE)
+        val isLoggedIn = sharedPreferences.getBoolean("is_logged_in", false)
+
+        if (!isLoggedIn) {
+            Toast.makeText(requireContext(), "You need to log in to add a marker", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val dialogView = layoutInflater.inflate(R.layout.add_marker_details_pop_up, null)
         val etMarkerName = dialogView.findViewById<EditText>(R.id.et_marker_name)
         val etNote = dialogView.findViewById<EditText>(R.id.et_note)
@@ -110,34 +120,62 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val markerName = etMarkerName.text.toString().ifBlank { "New Marker" }
             val noteText = etNote.text.toString()
 
-            val currentUser = auth.currentUser // Get the current user
+            val currentUser = sharedPreferences.getString("username", null)  // Retrieve username
             if (currentUser == null) {
                 Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
                 return@setOnClickListener
             }
 
-            val review = ReviewModel(
-                author = currentUser.uid,
-                notes = noteText,
-                imageId = R.drawable.placeholder, // Placeholder image ID
-                rating = 0 // Default rating
-            )
-
             val markerData = MarkerData(
                 nameOfPlace = markerName,
                 lat = latLng.latitude,
                 lng = latLng.longitude,
-                imageres = R.drawable.placeholder,
-                notes = listOf(review)
+                imageres = R.drawable.placeholder // Placeholder image ID
             )
 
-            val newMarkerRef = database.push()
-            newMarkerRef.setValue(markerData).addOnSuccessListener {
-                addMarkerToMap(markerData, newMarkerRef.key)
-                dialog.dismiss()
-            }.addOnFailureListener {
-                Toast.makeText(requireContext(), "Failed to add marker", Toast.LENGTH_SHORT).show()
+            if (noteText.isNotBlank()) {
+                // Create a new review in Firebase
+                val review = ReviewModel(
+                    author = currentUser,  // Use the stored username
+                    notes = noteText,
+                    imageId = R.drawable.placeholder, // Placeholder image ID
+                    rating = 0 // Default rating
+                )
+
+                val reviewRef = database.child("review").push() // Reference to the new review
+                reviewRef.setValue(review).addOnSuccessListener {
+                    val reviewId = reviewRef.key ?: return@addOnSuccessListener
+                    Log.d("MapFragment", "Review added with ID: $reviewId")
+
+                    // Associate the review ID with the marker
+                    markerData.notes = listOf(reviewId)
+
+                    // Push the marker data to Firebase
+                    val markerRef = database.child("marker").push()
+                    markerRef.setValue(markerData).addOnSuccessListener {
+                        Log.d("MapFragment", "MarkerData: $markerData added successfully.")
+                        addMarkerToMap(markerData, markerRef.key)
+                        dialog.dismiss()
+                    }.addOnFailureListener { e ->
+                        Log.d("MapFragment", "Failed to add marker: ${e.message}")
+                        Toast.makeText(requireContext(), "Failed to add marker", Toast.LENGTH_SHORT).show()
+                    }
+                }.addOnFailureListener { e ->
+                    Log.d("MapFragment", "Failed to add review: ${e.message}")
+                    Toast.makeText(requireContext(), "Failed to add review", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                // Add marker without review if note is empty
+                val markerRef = database.child("marker").push()
+                markerRef.setValue(markerData).addOnSuccessListener {
+                    Log.d("MapFragment", "MarkerData without review: $markerData added successfully.")
+                    addMarkerToMap(markerData, markerRef.key)
+                    dialog.dismiss()
+                }.addOnFailureListener { e ->
+                    Log.d("MapFragment", "Failed to add marker: ${e.message}")
+                    Toast.makeText(requireContext(), "Failed to add marker", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -147,6 +185,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         dialog.show()
     }
+
+
 
     private fun requestLocationPermission() {
         if (ContextCompat.checkSelfPermission(

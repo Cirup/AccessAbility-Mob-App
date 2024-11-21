@@ -7,5 +7,5 @@ data class MarkerData(
     var lat: Double,       // Latitude of the marker
     var lng: Double,       // Longitude of the marker
     var rating: Int = 0,  // default rating is 0 to say it is unrated
-    var notes: List<ReviewModel> = emptyList()
+    var notes: List<String> = emptyList()
 )
