@@ -1,6 +1,7 @@
-package com.mco.accessability
+package com.mco.accessability.dialogpost
 
 import androidx.recyclerview.widget.RecyclerView
+import com.mco.accessability.data.ReviewModel
 import com.mco.accessability.databinding.ItemNotesLayoutBinding
 
 class DialogViewHolder(private val viewBinding: ItemNotesLayoutBinding): RecyclerView.ViewHolder(viewBinding.root)  {

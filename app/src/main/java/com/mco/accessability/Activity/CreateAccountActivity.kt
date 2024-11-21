@@ -1,4 +1,4 @@
-package com.mco.accessability
+package com.mco.accessability.Activity
 
 import android.os.Bundle
 import android.util.Log
