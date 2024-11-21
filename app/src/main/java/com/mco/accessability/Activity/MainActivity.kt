@@ -2,90 +2,93 @@ package com.mco.accessability.Activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.firestore.FirebaseFirestore
 import com.mco.accessability.databinding.LoginpageBinding
+import com.google.firebase.firestore.FirebaseFirestore
+import com.mco.accessability.data.SharedViewModel
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: LoginpageBinding
 
-    // Firebase Firestore instance
-    private val db = FirebaseFirestore.getInstance()
+    private val sharedViewModel: SharedViewModel by viewModels()
+
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val db = FirebaseFirestore.getInstance()
         binding = LoginpageBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
-        // Register hyperlink on click
+        setContentView(binding.root)
         binding.registerHref.setOnClickListener {
-            val intent = Intent(this, CreateAccountActivity::class.java)
-            startActivity(intent)
+            // Start the Register Activity
+            finish()
         }
 
-        // Login button click listener
         binding.loginBtn.setOnClickListener {
-            val email = binding.emailHolder.text.toString()
+
+            // ToDO change email to username
+            val username = binding.emailHolder.text.toString()
             val password = binding.passHolder.text.toString()
 
-            if (email.isEmpty() || password.isEmpty()) {
+            if (username.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Validate the login credentials using Firebase Firestore
-            validateLoginCredentials(email, password)
+            db.collection("users")
+                .whereEqualTo("username", username)
+                .whereEqualTo("password", password)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (documents.isEmpty) {
+                        Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show()
+                    } else {
+                        // User authenticated successfully
+                        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
+                        // Navigate to the next activity or home screen
+                        val intent = Intent(this, MapActivity::class.java)
+                        startActivity(intent)
+
+                        //startActivity(Intent(this, HomeActivity::class.java))
+                        // finish()
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.e("LoginActivity", "Error logging in", e)
+                    Toast.makeText(this, "An error occurred. Please try again.", Toast.LENGTH_SHORT).show()
+                }
+        }
+        //replaceFragment(MapFragment(sharedViewModel))
+
+        //login button on click listener
+        //login()
+        //create account button on click listener
+        createAccount()
+    }
+
+    private fun createAccount(){
+        val textView = binding.registerHref
+
+        //when clicked, it will lead to the register page
+        textView.setOnClickListener{
+            val intent = Intent(this, CreateAccountActivity::class.java)
+            startActivity(intent)
         }
     }
 
-    // Validate login credentials with Firebase Firestore
-    private fun validateLoginCredentials(email: String, password: String) {
-        // Query Firestore to find the user with the entered email
-        db.collection("users")
-            .whereEqualTo("email", email)
-            .get()
-            .addOnSuccessListener { documents ->
-                if (documents.isEmpty) {
-                    Toast.makeText(this, "User not found", Toast.LENGTH_SHORT).show()
-                } else {
-                    // If user is found, check if password matches
-                    for (document in documents) {
-                        val storedPassword = document.getString("password")
+    private fun login(){
+        val button = binding.loginBtn
 
-                        if (password == storedPassword) {
-                            // Successful login
-                            Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
-
-                            // Save the login status in SharedPreferences
-                            val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
-                            val editor = sharedPreferences.edit()
-                            editor.putString("username", document.getString("username"))
-                            editor.putString("email", email)
-                            editor.putString("password", password)
-                            editor.putBoolean("is_logged_in", true)
-                            editor.apply()
-
-                            // Navigate to the home screen (MapActivity)
-                            navigateToHomeScreen()
-                        } else {
-                            // Invalid password
-                            Toast.makeText(this, "Incorrect password", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-            }
-            .addOnFailureListener { e ->
-                // Handle any errors that occur during Firestore query
-                Toast.makeText(this, "Error fetching user data: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+        button.setOnClickListener{
+            val intent = Intent(this, MapActivity::class.java)
+            startActivity(intent)
+        }
     }
 
-    // Navigate to the home screen (MapActivity)
-    private fun navigateToHomeScreen() {
-        val intent = Intent(this, MapActivity::class.java)
-        startActivity(intent)
-        finish()  // Close the login activity so user cannot go back
-    }
+
 }
