@@ -42,6 +42,8 @@ class CreateAccountActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // input validation
+
             // Save the user data locally using SharedPreferences
             saveUserData(username, email, password)
 
@@ -67,7 +69,12 @@ class CreateAccountActivity : AppCompatActivity() {
 
     // Save user data to Firebase Firestore
     private fun saveUserToFirestore(username: String, email: String, password: String) {
+        // hash password
+
         // Create a new user map
+
+
+
         val user = hashMapOf(
             "username" to username,
             "email" to email,
