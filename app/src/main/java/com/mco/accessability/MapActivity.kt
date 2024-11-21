@@ -16,11 +16,11 @@ class MapActivity : AppCompatActivity() {
 
         binding = ActivityLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        replaceFragment(MapFragment(sharedViewModel))
+        replaceFragment(MapFragment())
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){
-                R.id.Maps -> replaceFragment(MapFragment(sharedViewModel))
+                R.id.Maps -> replaceFragment(MapFragment())
                 R.id.Profile -> replaceFragment(ProfileFragment())
 
                 else ->{

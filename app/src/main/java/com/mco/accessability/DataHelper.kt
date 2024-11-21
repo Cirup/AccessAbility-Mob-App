@@ -3,35 +3,35 @@ package com.mco.accessability
 import java.util.ArrayList
 
 object DataHelper {
-    fun loadTweetData(): ArrayList<AddedNotesModel> {
-        val data = ArrayList<AddedNotesModel>()
+    fun loadTweetData(): ArrayList<ReviewModel> {
+        val data = ArrayList<ReviewModel>()
         data.add(
-            AddedNotesModel(
-                "armin.armode.armedian", "Armin Arlert", R.drawable.armin
+            ReviewModel(
+                "armin.armode.armedian", "Armin Arlert", R.drawable.armin, 5
             )
         )
         data.add(
-            AddedNotesModel(
+            ReviewModel(
                 "wonderboy", "Zeke Jaeger",
-                R.drawable.zeke
+                R.drawable.zeke, 1
             )
         )
         data.add(
-            AddedNotesModel(
+            ReviewModel(
                 "eldian.pride", "Falco Grice",
-                R.drawable.falco
+                R.drawable.falco, 3
             )
         )
         data.add(
-            AddedNotesModel(
+            ReviewModel(
                 "rudolph_the_reiner", "Reiner Braun",
-                R.drawable.reiner
+                R.drawable.reiner, 5
             )
         )
         data.add(
-            AddedNotesModel(
+            ReviewModel(
                 "jaegermeister", "Eren Jaeger",
-                R.drawable.eren
+                R.drawable.eren, 5
             )
         )
 
