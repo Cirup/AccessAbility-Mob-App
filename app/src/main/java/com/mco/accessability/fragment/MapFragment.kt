@@ -328,7 +328,7 @@ class MapFragment(private val sharedViewModel: SharedViewModel) : Fragment(), On
     }
 
     private fun showMarkerPopup(marker: Marker, markerData: MarkerData) {
-//      // Custom popup dialog with the marker's name, image, and action buttons
+        // Custom popup dialog with the marker's name, image, and action buttons
 
         bottomSheetDialog = BottomSheetDialog(requireContext())
         val bottomSheetView = layoutInflater.inflate(R.layout.bottom_dialog, null)
