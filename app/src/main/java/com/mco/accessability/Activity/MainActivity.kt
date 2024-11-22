@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
 import com.mco.accessability.databinding.LoginpageBinding
+import org.mindrot.jbcrypt.BCrypt
 
 class MainActivity : AppCompatActivity() {
 
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity() {
                     for (document in documents) {
                         val storedPassword = document.getString("password")
 
-                        if (password == storedPassword) {
+                        if (BCrypt.checkpw(password, storedPassword)) {
                             // Successful login
                             Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
 

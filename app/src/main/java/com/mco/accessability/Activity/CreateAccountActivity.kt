@@ -1,10 +1,12 @@
 package com.mco.accessability.Activity
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
 import com.mco.accessability.databinding.RegisterpageBinding
+import org.mindrot.jbcrypt.BCrypt
 
 class CreateAccountActivity : AppCompatActivity() {
 
@@ -70,15 +72,13 @@ class CreateAccountActivity : AppCompatActivity() {
     // Save user data to Firebase Firestore
     private fun saveUserToFirestore(username: String, email: String, password: String) {
         // hash password
-
+        val hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt())
         // Create a new user map
-
-
 
         val user = hashMapOf(
             "username" to username,
             "email" to email,
-            "password" to password, // In a real app, do not store passwords in plain text!
+            "password" to hashedPassword, // In a real app, do not store passwords in plain text!
             "profileImg" to 0
         )
 
