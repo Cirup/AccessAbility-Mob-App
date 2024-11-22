@@ -1,14 +1,14 @@
-package com.mco.accessability.activity
+package com.mco.accessability.Activity
 
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.mco.accessability.fragment.MapFragment
-import com.mco.accessability.fragment.ProfileFragment
 import com.mco.accessability.R
 import com.mco.accessability.SharedViewModel
 import com.mco.accessability.databinding.ActivityLayoutBinding
+import com.mco.accessability.fragment.MapFragment
+import com.mco.accessability.fragment.ProfileFragment
 
 class MapActivity : AppCompatActivity() {
 
@@ -20,11 +20,11 @@ class MapActivity : AppCompatActivity() {
 
         binding = ActivityLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        replaceFragment(MapFragment())
+        replaceFragment(MapFragment(sharedViewModel))
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){
-                R.id.Maps -> replaceFragment(MapFragment())
+                R.id.Maps -> replaceFragment(MapFragment(sharedViewModel))
                 R.id.Profile -> replaceFragment(ProfileFragment())
 
                 else ->{
