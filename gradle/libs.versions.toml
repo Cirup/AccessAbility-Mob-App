@@ -22,6 +22,7 @@ materialVersion = "1.5.0"
 playServicesLocation = "21.3.0"
 firebaseFirestoreKtx = "25.1.1"
 playServicesMaps = "19.0.0"
+firebaseAuthKtx = "23.1.0"
 
 [libraries]
 androidx-constraintlayout-v220beta01 = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayoutVersion" }
@@ -55,6 +56,7 @@ material-v150 = { module = "com.google.android.material:material", version.ref =
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 play-services-maps-v1900 = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
