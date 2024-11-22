@@ -2,9 +2,4 @@
 <resources>
     <style name="Theme.Frame" parent="Theme.MaterialComponents.Light.NoActionBar">
     </style>
-
-    <style name="DialogAnimation">
-        <item name="android:windowEnterAnimation">@anim/slide_in</item>
-        <item name="android:windowExitAnimation">@anim/slide_in</item>
-    </style>
 </resources>

@@ -1,4 +1,4 @@
-package com.mco.accessability;
+package com.mco.accessability.models;
 
 public class UserModel {
     private String username;

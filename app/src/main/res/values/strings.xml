@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Frame</string>
-    <string name="maps">Add Maps</string>
-    <string name="profile"> Add Profile</string>
+    <string name="maps">Maps</string>
+    <string name="profile">Profile</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="enter_password">Enter Password</string>
@@ -20,5 +20,5 @@
     <string name="rating_question"> How would you rate this place?</string>
     <string name="add_notes">Add Notes…</string>
     <string name="search_here">Search here</string>
-    <string name="search_markers_here">Search markers here</string>
+    <string name="search_markers_here">Search here</string>
 </resources>

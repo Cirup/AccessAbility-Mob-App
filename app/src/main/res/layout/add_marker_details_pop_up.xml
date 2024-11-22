@@ -1,69 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
 
     <!-- EditText for the marker name -->
-    <EditText
-        android:id="@+id/et_marker_name"
+    <TextView
+        android:id="@+id/textView4"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:hint="Add Marker Name"/>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="Leave a Marker"
+        android:textAlignment="center"
+        android:textColor="#2196F3"
+        android:textSize="28sp"
+        android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="Add Location Name"
+        android:textColor="#4D4D4D"
+        android:textSize="18dp" />
+
+    <EditText
+        android:id="@+id/et_marker_name"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/input_location_bg"
+        android:hint="Location Name"
+        android:paddingStart="16dp"
+        android:textAlignment="viewStart"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
         android:text="Rating"
-        android:textSize="20dp"
-        />
+        android:textColor="#4D4D4D"
+        android:textSize="18dp" />
 
     <!-- Radio group for rating -->
     <RadioGroup
         android:id="@+id/rg_rating"
-        android:layout_width="match_parent"
+        android:layout_width="321dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center_horizontal"
         android:orientation="horizontal">
 
         <RadioButton
             android:id="@+id/rb_star_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1" />
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/rating_buttons"
+            android:button="@android:color/transparent"
+            android:checked="true"
+            android:gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingTop="2dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="2dp"
+            android:text="1"
+            android:textColor="@drawable/radio_text_selector"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <RadioButton
             android:id="@+id/rb_star_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2" />
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/rating_buttons"
+            android:button="@android:color/transparent"
+            android:checked="false"
+            android:gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingTop="2dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="2dp"
+            android:text="2"
+            android:textColor="@drawable/radio_text_selector"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <RadioButton
             android:id="@+id/rb_star_3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="3" />
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/rating_buttons"
+            android:button="@android:color/transparent"
+            android:checked="false"
+            android:gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingTop="2dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="2dp"
+            android:text="3"
+            android:textColor="@drawable/radio_text_selector"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <RadioButton
             android:id="@+id/rb_star_4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="4" />
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/rating_buttons"
+            android:button="@android:color/transparent"
+            android:checked="false"
+            android:gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingTop="2dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="2dp"
+            android:text="4"
+            android:textColor="@drawable/radio_text_selector"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <RadioButton
             android:id="@+id/rb_star_5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="5" />
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/rating_buttons"
+            android:button="@android:color/transparent"
+            android:checked="false"
+            android:gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingTop="2dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="2dp"
+            android:text="5"
+            android:textColor="@drawable/radio_text_selector"
+            tools:ignore="TouchTargetSizeCheck" />
+
     </RadioGroup>
 
+
     <!-- EditText for the marker note -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="Tell Us What You Think"
+        android:textColor="#4D4D4D"
+        android:textSize="18dp" />
+
     <EditText
         android:id="@+id/et_note"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:hint="Add a note"/>
+        android:background="@drawable/input_location_bg"
+        android:gravity="start"
+        android:hint="Add a note"
+        android:padding="16dp"
+        android:textAlignment="viewStart"
+        android:textSize="14sp" />
 
     <!-- Buttons for cancel and confirm -->
     <LinearLayout
@@ -77,13 +175,15 @@
             android:id="@+id/btn_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/selected"
             android:text="Cancel"/>
 
         <Button
             android:id="@+id/btn_confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Confirm"
+            android:backgroundTint="@color/selected"
+            android:text="Post"
             android:layout_marginStart="16dp"/>
     </LinearLayout>
 
