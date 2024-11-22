@@ -32,8 +32,10 @@ class CreateAccountActivity : AppCompatActivity() {
         // submit data to Firestore Database
         binding.registerBtn.setOnClickListener{
             // data to be passed in the firestore
-            val username = binding.usernameTv.text
-            val email = binding.emailHolder.text
+            val username = binding.usernameTv.text.toString().trim()
+            val email = binding.emailHolder.text.toString().trim()
+            val password = binding.passHolder.text.toString()
+            val confirmPassword = binding.conPassHolder.text.toString()
             val profileImg = 0
 
             // Check if all fields are filled
@@ -43,13 +45,26 @@ class CreateAccountActivity : AppCompatActivity() {
             }
 
             // Check if passwords match
-            if (binding.passHolder.text.toString() != binding.conPassHolder.text.toString()) {
+            if (password != confirmPassword) {
                 Toast.makeText(this, "Retyped password doesn't match", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            // Firebase email validation regex
+            val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
+            if (!email.matches(emailPattern.toRegex())) {
+                Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Password strength validation
+            if (password.length < 6) {
+                Toast.makeText(this, "Password must be at least 6 characters long", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             // Add firebase authentication
-            auth.createUserWithEmailAndPassword(email.toString(), binding.passHolder.toString())
+            auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful){
                         val user = auth.currentUser
@@ -69,10 +84,13 @@ class CreateAccountActivity : AppCompatActivity() {
     private fun saveUserInfoToFirestore(uid: String?, username: String, email: String, profileImg: Int) {
         if (uid == null) return
 
-        val user: MutableMap<String, Any?> = HashMap()
-        user["username"] = username.toString()
-        user["email"] = email.toString()
-        user["profileImg"] = profileImg
+        val user = hashMapOf(
+            "username" to username,
+            "email" to email,
+            "profileImg" to profileImg,
+            "createdAt" to System.currentTimeMillis()
+        )
+
 
         db.collection("users").document(uid)
             .set(user)
