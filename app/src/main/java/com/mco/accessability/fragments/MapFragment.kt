@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.firestore.FirebaseFirestore
 import com.mco.accessability.data.MarkerData
 import com.mco.accessability.R
 import com.mco.accessability.data.ReviewModel
@@ -134,8 +135,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 imageres = R.drawable.placeholder // Placeholder image ID
             )
 
+            val db = FirebaseFirestore.getInstance()
+
             if (noteText.isNotBlank()) {
-                // Create a new review in Firebase
+                // Create a new review
                 val review = ReviewModel(
                     author = currentUser,  // Use the stored username
                     notes = noteText,
@@ -143,39 +146,46 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     rating = 0 // Default rating
                 )
 
-                val reviewRef = database.child("review").push() // Reference to the new review
-                reviewRef.setValue(review).addOnSuccessListener {
-                    val reviewId = reviewRef.key ?: return@addOnSuccessListener
-                    Log.d("MapFragment", "Review added with ID: $reviewId")
+                // Add review to Firestore
+                db.collection("review")
+                    .add(review)
+                    .addOnSuccessListener { reviewRef ->
+                        val reviewId = reviewRef.id
+                        Log.d("MapFragment", "Review added with ID: $reviewId")
 
-                    // Associate the review ID with the marker
-                    markerData.notes = listOf(reviewId)
+                        // Associate the review ID with the marker
+                        markerData.notes = listOf(reviewId)
 
-                    // Push the marker data to Firebase
-                    val markerRef = database.child("marker").push()
-                    markerRef.setValue(markerData).addOnSuccessListener {
-                        Log.d("MapFragment", "MarkerData: $markerData added successfully.")
-                        addMarkerToMap(markerData, markerRef.key)
+                        // Add marker data to Firestore
+                        db.collection("marker")
+                            .add(markerData)
+                            .addOnSuccessListener { markerRef ->
+                                Log.d("MapFragment", "Marker added with ID: ${markerRef.id}")
+                                addMarkerToMap(markerData, markerRef.id)
+                                dialog.dismiss()
+                            }
+                            .addOnFailureListener { e ->
+                                Log.d("MapFragment", "Failed to add marker: ${e.message}")
+                                Toast.makeText(requireContext(), "Failed to add marker", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.d("MapFragment", "Failed to add review: ${e.message}")
+                        Toast.makeText(requireContext(), "Failed to add review", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                // Add marker without review if note is empty
+                db.collection("marker")
+                    .add(markerData)
+                    .addOnSuccessListener { markerRef ->
+                        Log.d("MapFragment", "Marker without review added with ID: ${markerRef.id}")
+                        addMarkerToMap(markerData, markerRef.id)
                         dialog.dismiss()
-                    }.addOnFailureListener { e ->
+                    }
+                    .addOnFailureListener { e ->
                         Log.d("MapFragment", "Failed to add marker: ${e.message}")
                         Toast.makeText(requireContext(), "Failed to add marker", Toast.LENGTH_SHORT).show()
                     }
-                }.addOnFailureListener { e ->
-                    Log.d("MapFragment", "Failed to add review: ${e.message}")
-                    Toast.makeText(requireContext(), "Failed to add review", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                // Add marker without review if note is empty
-                val markerRef = database.child("marker").push()
-                markerRef.setValue(markerData).addOnSuccessListener {
-                    Log.d("MapFragment", "MarkerData without review: $markerData added successfully.")
-                    addMarkerToMap(markerData, markerRef.key)
-                    dialog.dismiss()
-                }.addOnFailureListener { e ->
-                    Log.d("MapFragment", "Failed to add marker: ${e.message}")
-                    Toast.makeText(requireContext(), "Failed to add marker", Toast.LENGTH_SHORT).show()
-                }
             }
         }
 
@@ -185,6 +195,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         dialog.show()
     }
+
 
 
 
