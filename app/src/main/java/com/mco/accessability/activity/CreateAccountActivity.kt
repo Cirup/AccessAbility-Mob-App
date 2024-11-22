@@ -43,7 +43,7 @@ class CreateAccountActivity : AppCompatActivity() {
             }
 
             // Check if passwords match
-            if (binding.passHolder.text != binding.conPassHolder.text) {
+            if (binding.passHolder.text.toString() != binding.conPassHolder.text.toString()) {
                 Toast.makeText(this, "Retyped password doesn't match", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
