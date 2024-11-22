@@ -2,70 +2,77 @@ package com.mco.accessability.activity
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.viewModels
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.mco.accessability.SharedViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.mco.accessability.databinding.LoginpageBinding
-import com.mco.accessability.ui.theme.FrameTheme
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: LoginpageBinding
-
-    private val sharedViewModel: SharedViewModel by viewModels()
-
-    private val LOCATION_PERMISSION_REQUEST_CODE = 1
+    private lateinit var auth: FirebaseAuth // Firebase Authentication instance
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = LoginpageBinding.inflate(layoutInflater)
         setContentView(binding.root)
-//        replaceFragment(MapFragment(sharedViewModel))
 
-        //login button on click listener
-        login()
-        //create account button on click listener
-        createAccount()
-    }
+        // Initialize FirebaseAuth
+        auth = FirebaseAuth.getInstance()
 
-    private fun createAccount(){
-        val textView = binding.registerHref
-
-        //when clicked, it will lead to the register page
-        textView.setOnClickListener{
+        // Register hyperlink on click
+        binding.registerHref.setOnClickListener {
             val intent = Intent(this, CreateAccountActivity::class.java)
             startActivity(intent)
         }
-    }
 
-    private fun login(){
-        val button = binding.loginBtn
+        // Login button click listener
+        binding.loginBtn.setOnClickListener {
+            val email = binding.emailHolder.text.toString()
+            val password = binding.passHolder.text.toString()
 
-        button.setOnClickListener{
-            val intent = Intent(this, MapActivity::class.java)
-            startActivity(intent)
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Validate login credentials using Firebase Authentication
+            loginUser(email, password)
         }
     }
 
+    // Login user with Firebase Authentication
+    private fun loginUser(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Login successful
+                    val user = auth.currentUser
 
-}
+                    // Save user information in SharedPreferences
+                    val sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putString("email", user?.email)
+                    editor.putBoolean("is_logged_in", true)
+                    editor.apply()
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+                    Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FrameTheme {
-        Greeting("Android")
+                    // Navigate to the home screen
+                    navigateToHomeScreen(user?.uid, user?.email)
+                } else {
+                    // Handle errors
+                    Toast.makeText(this, "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+    // Navigate to the home screen (MapActivity)
+    private fun navigateToHomeScreen(userId: String?, email: String?) {
+        val intent = Intent(this, MapActivity::class.java)
+        intent.putExtra("USER_ID", userId)
+        intent.putExtra("EMAIL", email)
+        startActivity(intent)
+        finish() // Close the login activity so user cannot go back
     }
 }
