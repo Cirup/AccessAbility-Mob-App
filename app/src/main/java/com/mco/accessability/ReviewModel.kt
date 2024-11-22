@@ -1,4 +1,4 @@
-package com.mco.accessability.data
+package com.mco.accessability
 
 data class ReviewModel(
     val author:String,

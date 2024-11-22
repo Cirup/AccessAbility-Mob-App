@@ -1,4 +1,4 @@
-package com.mco.accessability.data
+package com.mco.accessability
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData

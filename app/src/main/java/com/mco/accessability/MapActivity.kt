@@ -1,14 +1,10 @@
-package com.mco.accessability.Activity
+package com.mco.accessability
 
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.mco.accessability.R
-import com.mco.accessability.data.SharedViewModel
 import com.mco.accessability.databinding.ActivityLayoutBinding
-import com.mco.accessability.fragments.MapFragment
-import com.mco.accessability.fragments.ProfileFragment
 
 class MapActivity : AppCompatActivity() {
 

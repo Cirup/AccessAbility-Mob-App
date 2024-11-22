@@ -1,6 +1,5 @@
-package com.mco.accessability.data
+package com.mco.accessability
 
-import com.mco.accessability.R
 import java.util.ArrayList
 
 object DataHelper {
