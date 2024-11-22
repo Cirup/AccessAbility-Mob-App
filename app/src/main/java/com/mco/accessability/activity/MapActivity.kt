@@ -1,4 +1,4 @@
-package com.mco.accessability.Activity
+package com.mco.accessability.activity
 
 import android.os.Bundle
 import androidx.activity.viewModels
