@@ -34,10 +34,15 @@ class ProfileFragment : Fragment() {
     }
 
     private fun logoutUser() {
-        auth.signOut()
-        Toast.makeText(requireContext(), "Logged out successfully!", Toast.LENGTH_SHORT).show()
-        navigateToLoginScreen()
+        try {
+            auth.signOut()
+            Toast.makeText(requireContext(), "Logged out successfully!", Toast.LENGTH_SHORT).show()
+            navigateToLoginScreen()
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Error logging out: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
+
 
     private fun navigateToLoginScreen() {
         val intent = Intent(requireContext(), LoginActivity::class.java).apply {

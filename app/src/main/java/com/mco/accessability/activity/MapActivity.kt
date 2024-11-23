@@ -13,18 +13,18 @@ import com.mco.accessability.fragment.ProfileFragment
 class MapActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLayoutBinding
-    private val sharedViewModel: SharedViewModel by viewModels()
+    //private val sharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        replaceFragment(MapFragment(sharedViewModel))
+        replaceFragment(MapFragment())
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){
-                R.id.Maps -> replaceFragment(MapFragment(sharedViewModel))
+                R.id.Maps -> replaceFragment(MapFragment())
                 R.id.Profile -> replaceFragment(ProfileFragment())
 
                 else ->{
