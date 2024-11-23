@@ -100,6 +100,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/logoutButtonLayout"
         android:layout_width="350dp"
         android:layout_height="61dp"
         android:layout_marginStart="32dp"
