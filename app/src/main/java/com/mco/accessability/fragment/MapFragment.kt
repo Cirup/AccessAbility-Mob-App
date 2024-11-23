@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -28,13 +29,23 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.mco.accessability.models.MarkerData
+import com.mco.accessability.DataHelper
 import com.mco.accessability.R
+import com.mco.accessability.SharedViewModel
+import com.mco.accessability.adapter.DialogPostAdapter
+import com.mco.accessability.databinding.BottomDialogBinding
+import com.mco.accessability.databinding.FragmentMapBinding
+import com.mco.accessability.models.MarkerData
+
 import com.mco.accessability.models.ReviewModel
 
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -46,19 +57,39 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var database: DatabaseReference
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private lateinit var auth: FirebaseAuth // Add FirebaseAuth
+    private lateinit var bottomDialogBinding: BottomDialogBinding
+    private lateinit var dialogPostAdapter: DialogPostAdapter
+    private lateinit var database: DatabaseReference
+    private lateinit var auth: FirebaseAuth // Add FirebaseAuth
+
+
+
+    private lateinit var mapbinding: FragmentMapBinding
+
+
+    // Access the same SharedViewModel as the activity
+    //private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_map, container, false)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
-        mapFragment.getMapAsync(this)
 
+        // Get Database Reference
         auth = FirebaseAuth.getInstance() // Initialize FirebaseAuth
         database = FirebaseDatabase.getInstance().getReference("markers")
 
-        val markerAdderButton: ImageView = view.findViewById(R.id.markerAdderModeButton)
+        // MapBinding
+        mapbinding = FragmentMapBinding.inflate(inflater)
+        val view = mapbinding.root
+        val mapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+
+        //val markerAdderButton: ImageView = view.findViewById(R.id.markerAdderModeButton)
+
+        // Find the marker adder mode button and set the click listener
+        val markerAdderButton: ImageView = mapbinding.markerAdderModeButton
+
         markerAdderButton.setOnClickListener {
             isMarkerAdderModeEnabled = !isMarkerAdderModeEnabled
             if (isMarkerAdderModeEnabled) {
@@ -68,14 +99,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
-
-
-        val zoomInButton: Button = view.findViewById(R.id.zoomInButton)
-        val zoomOutButton: Button = view.findViewById(R.id.zoomOutButton)
+        // Find zoom buttons and set their click listeners
+        val zoomInButton: Button = mapbinding.zoomInButton
+        val zoomOutButton: Button = mapbinding.zoomOutButton
+        //val zoomInButton: Button = view.findViewById(R.id.zoomInButton)
+        //val zoomOutButton: Button = view.findViewById(R.id.zoomOutButton)
         zoomInButton.setOnClickListener { googleMap?.animateCamera(CameraUpdateFactory.zoomIn()) }
         zoomOutButton.setOnClickListener { googleMap?.animateCamera(CameraUpdateFactory.zoomOut()) }
 
-        val searchEditText: EditText = view.findViewById(R.id.searchMarkerEditText)
+        //val searchEditText: EditText = view.findViewById(R.id.searchMarkerEditText)
+        // Find the search EditText and set a listener
+        val searchEditText: EditText = mapbinding.searchMarkerEditText
         searchEditText.setOnEditorActionListener { _, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER)) {
                 val query = searchEditText.text.toString()
@@ -86,10 +120,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
+        //sharedViewModel.logMarkerData()
         return view
     }
 
     override fun onMapReady(map: GoogleMap) {
+        Log.d("MapFragment", "Map is ready")
         googleMap = map
         requestLocationPermission()
 
@@ -238,7 +274,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             enableUserLocation()
         }
     }
-
 
     private fun enableUserLocation() {
         if (ContextCompat.checkSelfPermission(
@@ -477,6 +512,42 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 Log.d("MapFragment", "Failed to retrieve username: ${e.message}")
                 onComplete(null) // Handle failure
             }
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<out String>,
+//        grantResults: IntArray
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//
+//        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+//            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                // Permission granted, enable location and move camera
+//                enableUserLocation()
+//            } else {
+//                Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    }
+
+
+//    private fun addMarker(markerData: MarkerData) {
+//        // Create MarkerOptions using the data from markerData
+//        val markerOptions = MarkerOptions()
+//            .position(LatLng(markerData.lat, markerData.lng))
+//            .title(markerData.name)
+//
+//        // Add the marker to the Google Map
+//        val marker = googleMap?.addMarker(markerOptions)
+//
+//        // Update the marker's tag with the associated com.mco.accessability.models.MarkerData
+//        marker?.tag = markerData
+//
+//        // Update the markerID after it has been created
+//        markerData.markerID = marker?.id ?: ""
+//
+//        // Add the marker to the markers list
+//        marker?.let { markers.add(it) }
+//    }
     }
 
 }
