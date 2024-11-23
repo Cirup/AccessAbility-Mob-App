@@ -29,7 +29,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -59,8 +58,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var auth: FirebaseAuth // Add FirebaseAuth
     private lateinit var bottomDialogBinding: BottomDialogBinding
     private lateinit var dialogPostAdapter: DialogPostAdapter
-    private lateinit var database: DatabaseReference
-    private lateinit var auth: FirebaseAuth // Add FirebaseAuth
 
 
 
