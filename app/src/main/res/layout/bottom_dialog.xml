@@ -187,23 +187,39 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/editTextText"
-            android:layout_width="322dp"
-            android:layout_height="48dp"
-            android:background="@drawable/customized_add_notes"
-            android:elevation="8dp"
-            android:ems="10"
-            android:inputType="text"
-            android:text="@string/add_notes"
-            android:textColor="@color/no_rating"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.895"
-            tools:ignore="TouchTargetSizeCheck" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/rcv_dialog"
+            tools:layout_editor_absoluteX="8dp">
+
+            <EditText
+                android:id="@+id/editTextText"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@drawable/customized_add_notes"
+                android:elevation="8dp"
+                android:ems="10"
+                android:inputType="text"
+                android:text="@string/add_notes"
+                android:textColor="@color/no_rating"
+                android:textSize="14sp"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <Button
+                android:id="@+id/btnAddReview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                android:text=">"
+                android:textSize="18sp" />
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
