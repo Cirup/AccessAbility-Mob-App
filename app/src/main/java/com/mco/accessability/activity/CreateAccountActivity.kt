@@ -66,21 +66,29 @@ class CreateAccountActivity : AppCompatActivity() {
             // Check for duplicate username
             validateUsername(username,
                 onSuccess = {
-                    // If username is valid, proceed to register user with Firebase Auth
-                    auth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful){
-                                val user = auth.currentUser
-                                saveUserInfoToFirestore(user?.uid, username.toString(), email.toString(), profileImg)
-                                Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
+                    // Validate email
+                    validateEmail(email,
+                        onSuccess = {
+                            // If username and email is valid, proceed to register user with Firebase Auth
+                            auth.createUserWithEmailAndPassword(email, password)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful){
+                                        val user = auth.currentUser
+                                        saveUserInfoToFirestore(user?.uid, username.toString(), email.toString(), profileImg)
+                                        Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
 
-                                finish()
-                            } else {
-                                Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                            }
-                        }
+                                        finish()
+                                    } else {
+                                        Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
 
-                    finish()
+                            finish()
+                        },
+                        onFailure = { errorMessage ->
+                            // Display error if username is already taken
+                            Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+                        })
                 },
                 onFailure = { errorMessage ->
                     // Display error if username is already taken
@@ -128,6 +136,25 @@ class CreateAccountActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 // Handle database query errors
                 onFailure("Error validating username: ${e.message}")
+            }
+    }
+
+    private fun validateEmail(email: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        db.collection("users")
+            .whereEqualTo("email", email)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    // Email does not exist, proceed with registration
+                    onSuccess()
+                } else {
+                    // Email already exists
+                    onFailure("Email is already taken. Please choose another one.")
+                }
+            }
+            .addOnFailureListener { e ->
+                // Handle database query errors
+                onFailure("Error validating email: ${e.message}")
             }
     }
 }
