@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -58,8 +59,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var auth: FirebaseAuth // Add FirebaseAuth
     private lateinit var bottomDialogBinding: BottomDialogBinding
     private lateinit var dialogPostAdapter: DialogPostAdapter
-
-
 
     private lateinit var mapbinding: FragmentMapBinding
 
@@ -343,7 +342,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
     }
 
-
     private fun showMarkerPopup(markerData: MarkerData) {
         Log.d("MapFragment", "showMarkerPopup")
 
@@ -355,12 +353,81 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         // Set the marker name in the popup
         bottomSheetView.findViewById<TextView>(R.id.markername).text = markerData.nameOfPlace
 
-        // Get the current logged-in user
+        // Initialize RecyclerView and Adapter
+        val recyclerView = bottomSheetView.findViewById<RecyclerView>(R.id.rcv_dialog)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        val adapter = DialogPostAdapter(arrayListOf())
+        recyclerView.adapter = adapter
+
+        // Load Reviews
+        loadReviews(markerData, adapter)
+
+        // Handle Add Review button
+        bottomSheetView.findViewById<Button>(R.id.btnAddReview).setOnClickListener {
+            handleAddReview(markerData, bottomSheetView, adapter)
+        }
+
+        bottomSheetDialog.show()
+    }
+
+    private fun loadReviews(markerData: MarkerData, adapter: DialogPostAdapter) {
+        Log.d("MapFragment", "loadReviews")
+        val db = FirebaseFirestore.getInstance()
+
+        // Query the marker to get its notes (review IDs)
+        db.collection("marker")
+            .whereEqualTo("nameOfPlace", markerData.nameOfPlace)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if (!querySnapshot.isEmpty) {
+                    val markerDoc = querySnapshot.documents.first()
+                    val reviewIds = markerDoc["notes"] as? List<String> ?: emptyList()
+
+                    // Fetch review details for each review ID
+                    if (reviewIds.isNotEmpty()) {
+                        db.collection("review")
+                            .whereIn(FieldPath.documentId(), reviewIds)
+                            .get()
+                            .addOnSuccessListener { reviewSnapshot ->
+                                val reviews = reviewSnapshot.documents.map { doc ->
+                                    doc.toObject(ReviewModel::class.java)!!
+                                }
+
+                                // Update the RecyclerView adapter
+                                adapter.updateData(reviews)
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("MapFragment", "Failed to load reviews: ${e.message}")
+                            }
+                    } else {
+                        Log.d("MapFragment", "No reviews found for this marker.")
+                    }
+                } else {
+                    Log.e("MapFragment", "Marker not found for nameOfPlace: ${markerData.nameOfPlace}")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("MapFragment", "Failed to query marker: ${e.message}")
+            }
+    }
+
+    private fun handleAddReview(
+        markerData: MarkerData,
+        bottomSheetView: View,
+        adapter: DialogPostAdapter
+    ) {
         val auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
 
         if (currentUser == null) {
             Toast.makeText(requireContext(), "You need to log in to add a review", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val reviewText = bottomSheetView.findViewById<EditText>(R.id.editTextText).text.toString()
+
+        if (reviewText.isBlank()) {
+            Toast.makeText(requireContext(), "Please enter a review", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -371,101 +438,52 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 return@getUsernameFromFirestore
             }
 
-            // Handle the Add Review button click
-            bottomSheetView.findViewById<Button>(R.id.btnAddReview).setOnClickListener {
-                val reviewText = bottomSheetView.findViewById<EditText>(R.id.editTextText).text.toString()
+            val db = FirebaseFirestore.getInstance()
 
-                if (reviewText.isBlank()) {
-                    Toast.makeText(requireContext(), "Please enter a review", Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
+            // Create a new review model with the retrieved username
+            val review = ReviewModel(
+                author = username,
+                notes = reviewText,
+                imageId = R.drawable.placeholder, // Placeholder image ID
+                rating = 0 // Default rating
+            )
+
+            // Add the review to the Firestore "review" collection
+            db.collection("review")
+                .add(review)
+                .addOnSuccessListener { reviewRef ->
+                    // Add review ID to the marker's notes
+                    db.collection("marker")
+                        .whereEqualTo("nameOfPlace", markerData.nameOfPlace)
+                        .get()
+                        .addOnSuccessListener { querySnapshot ->
+                            if (!querySnapshot.isEmpty) {
+                                val markerDoc = querySnapshot.documents.first()
+                                val markerRef = db.collection("marker").document(markerDoc.id)
+
+                                markerRef.update("notes", FieldValue.arrayUnion(reviewRef.id))
+                                    .addOnSuccessListener {
+                                        Log.d("MapFragment", "Review added successfully")
+
+                                        // Reload the reviews
+                                        loadReviews(markerData, adapter)
+                                        bottomSheetView.findViewById<EditText>(R.id.editTextText).text.clear()
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("MapFragment", "Failed to update marker's notes: ${e.message}")
+                                    }
+                            } else {
+                                Log.e("MapFragment", "Marker not found for nameOfPlace: ${markerData.nameOfPlace}")
+                            }
+                        }
                 }
-
-                // Create the new review model
-                val review = ReviewModel(
-                    author = username,
-                    notes = reviewText,
-                    imageId = R.drawable.placeholder, // Placeholder image ID
-                    rating = 0 // Default rating (could be set based on user input)
-                )
-
-                val db = FirebaseFirestore.getInstance()
-
-                // Add the review to the Firestore "review" collection
-                db.collection("review")
-                    .add(review)
-                    .addOnSuccessListener { reviewRef ->
-                        Log.d("MapFragment", "Review added with ID: ${reviewRef.id}")
-
-                        // Find the marker based on nameOfPlace (from markerData)
-                        val markerQuery = db.collection("marker")
-                            .whereEqualTo("nameOfPlace", markerData.nameOfPlace)
-
-                        markerQuery.get()
-                            .addOnSuccessListener { querySnapshot ->
-                                if (!querySnapshot.isEmpty) {
-                                    val markerDoc = querySnapshot.documents.first()
-                                    val markerRef = db.collection("marker").document(markerDoc.id)
-
-                                    // Update the marker's notes array with the new review ID
-                                    markerRef.update("notes", FieldValue.arrayUnion(reviewRef.id))
-                                        .addOnSuccessListener {
-                                            Log.d("MapFragment", "Marker's notes updated with new review ID")
-                                            Toast.makeText(requireContext(), "Review added successfully", Toast.LENGTH_SHORT).show()
-                                            bottomSheetDialog.dismiss()
-
-                                            // Now, load the reviews into the RecyclerView
-                                            //loadReviews(markerDoc["notes"] as List<String>)
-                                        }
-                                        .addOnFailureListener { e ->
-                                            Log.e("MapFragment", "Failed to update marker's notes: ${e.message}")
-                                            Toast.makeText(requireContext(), "Failed to update marker's notes", Toast.LENGTH_SHORT).show()
-                                        }
-                                } else {
-                                    Log.e("MapFragment", "Marker not found for nameOfPlace: ${markerData.nameOfPlace}")
-                                    Toast.makeText(requireContext(), "Marker not found", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("MapFragment", "Failed to query marker: ${e.message}")
-                                Toast.makeText(requireContext(), "Failed to find marker", Toast.LENGTH_SHORT).show()
-                            }
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e("MapFragment", "Failed to add review: ${e.message}")
-                        Toast.makeText(requireContext(), "Failed to add review", Toast.LENGTH_SHORT).show()
-                    }
-            }
+                .addOnFailureListener { e ->
+                    Log.e("MapFragment", "Failed to add review: ${e.message}")
+                }
         }
-
-        bottomSheetDialog.show()
     }
 
-    /*private fun loadReviews(reviewIds: List<String>) {
-        val db = FirebaseFirestore.getInstance()
 
-        // Query reviews by their IDs
-        val reviewQuery = db.collection("review")
-            .whereIn(FieldPath.documentId(), reviewIds)
-
-        reviewQuery.get()
-            .addOnSuccessListener { querySnapshot ->
-                if (!querySnapshot.isEmpty) {
-                    val reviews = querySnapshot.documents.mapNotNull { it.toObject(ReviewModel::class.java) }
-
-                    // Set up the RecyclerView
-                    val recyclerView = bottomSheetDialog.findViewById<RecyclerView>(R.id.recyclerViewReviews)
-                    val adapter = ReviewsAdapter(reviews)
-                    recyclerView?.adapter = adapter
-                } else {
-                    Log.e("MapFragment", "No reviews found")
-                    Toast.makeText(requireContext(), "No reviews found", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("MapFragment", "Failed to load reviews: ${e.message}")
-                Toast.makeText(requireContext(), "Failed to load reviews", Toast.LENGTH_SHORT).show()
-            }
-    }*/
 
 
 

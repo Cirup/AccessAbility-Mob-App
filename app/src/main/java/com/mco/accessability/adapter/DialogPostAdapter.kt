@@ -21,4 +21,10 @@ class DialogPostAdapter (private val notes: ArrayList<ReviewModel>): RecyclerVie
         holder.bindData(notes[position])
     }
 
+    fun updateData(newReviews: List<ReviewModel>) {
+        notes.clear()
+        notes.addAll(newReviews)
+        notifyDataSetChanged()
+    }
+
 }

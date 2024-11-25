@@ -1,10 +1,11 @@
 package com.mco.accessability.models
 
 data class ReviewModel(
-    val author:String,
-    val notes: String,
-    val imageId: Int,
-    val rating: Int,
+    val author: String = "",
+    val notes: String = "",
+    val imageId: Int = 0,
+    val rating: Int = 0,
     val upvotes: List<String> = emptyList(),
     val downvotes: List<String> = emptyList()
 )
+
