@@ -4,6 +4,8 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -42,6 +44,7 @@ import com.mco.accessability.DataHelper
 import com.mco.accessability.R
 import com.mco.accessability.SharedViewModel
 import com.mco.accessability.adapter.DialogPostAdapter
+import com.mco.accessability.adapter.SuggestionsAdapter
 import com.mco.accessability.databinding.BottomDialogBinding
 import com.mco.accessability.databinding.FragmentMapBinding
 import com.mco.accessability.models.MarkerData
@@ -62,6 +65,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var mapbinding: FragmentMapBinding
 
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var suggestionsAdapter: SuggestionsAdapter
+
 
     // Access the same SharedViewModel as the activity
     //private val sharedViewModel: SharedViewModel by activityViewModels()
@@ -80,6 +86,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val view = mapbinding.root
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        // Recycler view for suggestions
+        recyclerView = mapbinding.suggestionsRecyclerView
+
+        suggestionsAdapter = SuggestionsAdapter(emptyList()) { selectedMarker ->
+            // Handle marker click
+            val markerPosition = LatLng(selectedMarker.lat, selectedMarker.lng)
+            googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(markerPosition, 15f))
+            recyclerView.visibility = View.GONE
+        }
+
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = suggestionsAdapter
 
         //val markerAdderButton: ImageView = view.findViewById(R.id.markerAdderModeButton)
 
@@ -106,15 +125,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         //val searchEditText: EditText = view.findViewById(R.id.searchMarkerEditText)
         // Find the search EditText and set a listener
         val searchEditText: EditText = mapbinding.searchMarkerEditText
-        searchEditText.setOnEditorActionListener { _, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER)) {
-                val query = searchEditText.text.toString()
-                searchMarker(query)
-                true
-            } else {
-                false
+        searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterSuggestions(s.toString())
             }
-        }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
 
         //sharedViewModel.logMarkerData()
         return view
@@ -488,24 +507,47 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    private fun filterSuggestions(query: String) {
+        if (query.isNotEmpty()) {
+            fetchMarkersFromFirebase { markers ->
+                // Filter markers where nameOfPlace contains the query as a substring (case insensitive)
+                val filteredMarkers = markers.filter {
+                    it.nameOfPlace.startsWith(query, ignoreCase = true)
+                }
 
-    private fun searchMarker(query: String) {
-        database.orderByChild("nameOfPlace").equalTo(query).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    snapshot.children.first().getValue(MarkerData::class.java)?.let {
-                        val markerPosition = LatLng(it.lat, it.lng)
-                        googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(markerPosition, 15f))
-                    }
+                // Update the adapter with filtered data
+                suggestionsAdapter.updateData(filteredMarkers)
+
+                // Toggle the visibility of RecyclerView based on filtered results
+                if (filteredMarkers.isEmpty()) {
+                    recyclerView.visibility = View.GONE // Hide RecyclerView if no suggestions
                 } else {
-                    Toast.makeText(requireContext(), "Marker not found", Toast.LENGTH_SHORT).show()
+                    recyclerView.visibility = View.VISIBLE // Show RecyclerView if there are suggestions
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Search failed", Toast.LENGTH_SHORT).show()
+        } else {
+            // Optionally, handle empty query case (clear suggestions)
+            fetchMarkersFromFirebase { markers ->
+                suggestionsAdapter.updateData(emptyList()) // Empty list to hide suggestions
+                recyclerView.visibility = View.GONE
             }
-        })
+        }
+    }
+
+    private fun fetchMarkersFromFirebase(onMarkersFetched: (List<MarkerData>) -> Unit) {
+        val database = FirebaseFirestore.getInstance()
+
+        database.collection("marker")
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val markerList = querySnapshot.documents.mapNotNull { document ->
+                    document.toObject(MarkerData::class.java)
+                }
+                onMarkersFetched(markerList)
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(requireContext(), "Error fetching markers: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun getUsernameFromFirestore(currentUserEmail: String, onComplete: (String?) -> Unit) {

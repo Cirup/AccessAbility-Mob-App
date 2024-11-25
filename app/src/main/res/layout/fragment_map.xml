@@ -64,6 +64,28 @@
 
     </androidx.cardview.widget.CardView>
 
+    <androidx.cardview.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="150dp"
+        android:background="#ffffff"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="4dp"
+        app:layout_constraintStart_toEndOf="@+id/mapFragment"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/suggestionsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:clipToPadding="false"
+            android:padding="8dp"
+            android:scrollbars="vertical"
+            android:visibility="gone" />
+    </androidx.cardview.widget.CardView>
+
     <Button
         android:id="@+id/zoomInButton"
         android:layout_width="60dp"
