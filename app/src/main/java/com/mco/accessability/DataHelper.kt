@@ -8,30 +8,30 @@ object DataHelper {
         val data = ArrayList<ReviewModel>()
         data.add(
             ReviewModel(
-                "armin.armode.armedian", "Armin Arlert", R.drawable.armin, 5
+                "1","armin.armode.armedian", "Armin Arlert", R.drawable.armin, 5
             )
         )
         data.add(
             ReviewModel(
-                "wonderboy", "Zeke Jaeger",
+                "2","wonderboy", "Zeke Jaeger",
                 R.drawable.zeke, 1
             )
         )
         data.add(
             ReviewModel(
-                "eldian.pride", "Falco Grice",
+                "3","eldian.pride", "Falco Grice",
                 R.drawable.falco, 3
             )
         )
         data.add(
             ReviewModel(
-                "rudolph_the_reiner", "Reiner Braun",
+                "4","rudolph_the_reiner", "Reiner Braun",
                 R.drawable.reiner, 5
             )
         )
         data.add(
             ReviewModel(
-                "jaegermeister", "Eren Jaeger",
+                "5","jaegermeister", "Eren Jaeger",
                 R.drawable.eren, 5
             )
         )
