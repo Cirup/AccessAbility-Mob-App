@@ -389,8 +389,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             .whereIn(FieldPath.documentId(), reviewIds)
                             .get()
                             .addOnSuccessListener { reviewSnapshot ->
-                                val reviews = reviewSnapshot.documents.map { doc ->
-                                    doc.toObject(ReviewModel::class.java)!!
+                                // Filter out null values and ensure all items are valid ReviewModel objects
+                                val reviews = reviewSnapshot.documents.mapNotNull { doc ->
+                                    val review = doc.toObject(ReviewModel::class.java)
+                                    review?.copy(id = doc.id)  // Add the document ID to the ReviewModel
                                 }
 
                                 // Update the RecyclerView adapter
@@ -410,6 +412,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 Log.e("MapFragment", "Failed to query marker: ${e.message}")
             }
     }
+
+
+
 
     private fun handleAddReview(
         markerData: MarkerData,
@@ -452,7 +457,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             db.collection("review")
                 .add(review)
                 .addOnSuccessListener { reviewRef ->
-                    // Add review ID to the marker's notes
+                    val reviewWithId = review.copy(id = reviewRef.id)  // Update the review with the generated ID
+
+                    // Now add the review ID to the marker's notes
                     db.collection("marker")
                         .whereEqualTo("nameOfPlace", markerData.nameOfPlace)
                         .get()
@@ -461,11 +468,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                 val markerDoc = querySnapshot.documents.first()
                                 val markerRef = db.collection("marker").document(markerDoc.id)
 
-                                markerRef.update("notes", FieldValue.arrayUnion(reviewRef.id))
+                                markerRef.update("notes", FieldValue.arrayUnion(reviewWithId.id))
                                     .addOnSuccessListener {
                                         Log.d("MapFragment", "Review added successfully")
-
-                                        // Reload the reviews
                                         loadReviews(markerData, adapter)
                                         bottomSheetView.findViewById<EditText>(R.id.editTextText).text.clear()
                                     }
@@ -482,9 +487,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
         }
     }
-
-
-
 
 
     private fun searchMarker(query: String) {
