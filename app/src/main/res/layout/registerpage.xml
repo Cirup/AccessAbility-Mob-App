@@ -85,7 +85,7 @@
         android:id="@+id/registerBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/logreg_btn"
+        android:backgroundTint="@color/selected"
         android:fontFamily="@font/inter_semibold"
         android:text="@string/register"
         android:textColor="#FFFFFF"
