@@ -1,7 +1,7 @@
 package com.mco.accessability.models
 
 data class ReviewModel(
-    val id: String = "",  // Firebase document ID
+    var id: String = "",  // Firebase document ID
     val author: String = "",
     val notes: String = "",
     val imageId: Int = 0,
