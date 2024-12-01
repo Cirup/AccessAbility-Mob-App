@@ -571,42 +571,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 Log.d("MapFragment", "Failed to retrieve username: ${e.message}")
                 onComplete(null) // Handle failure
             }
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<out String>,
-//        grantResults: IntArray
-//    ) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//
-//        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-//            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                // Permission granted, enable location and move camera
-//                enableUserLocation()
-//            } else {
-//                Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//    }
-
-
-//    private fun addMarker(markerData: MarkerData) {
-//        // Create MarkerOptions using the data from markerData
-//        val markerOptions = MarkerOptions()
-//            .position(LatLng(markerData.lat, markerData.lng))
-//            .title(markerData.name)
-//
-//        // Add the marker to the Google Map
-//        val marker = googleMap?.addMarker(markerOptions)
-//
-//        // Update the marker's tag with the associated com.mco.accessability.models.MarkerData
-//        marker?.tag = markerData
-//
-//        // Update the markerID after it has been created
-//        markerData.markerID = marker?.id ?: ""
-//
-//        // Add the marker to the markers list
-//        marker?.let { markers.add(it) }
-//    }
     }
 
 }

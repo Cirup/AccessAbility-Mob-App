@@ -13,7 +13,6 @@ import com.mco.accessability.fragment.ProfileFragment
 class MapActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLayoutBinding
-    //private val sharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
