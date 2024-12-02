@@ -23,7 +23,6 @@ class ProfileFragment : Fragment() {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var profileBinding: FragmentProfileBinding
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,21 +31,23 @@ class ProfileFragment : Fragment() {
         profileBinding = FragmentProfileBinding.inflate(layoutInflater)
         val view = profileBinding.root
 
-        // Initialize FirebaseAuth
+        // Initialize FirebaseAuth and Firestore
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
-
 
         val currentUser = auth.currentUser
         val currentUserEmail = currentUser?.email ?: "Anonymous"
 
-        getUsernameFromFirestore(currentUserEmail) { username ->
+        // Fetch username and profileImg from Firestore
+        getUsernameAndProfileImgFromFirestore(currentUserEmail) { username, profileImg ->
             if (username == null) {
-                Toast.makeText(requireContext(), "Failed to retrieve username", Toast.LENGTH_SHORT)
-                    .show()
-                return@getUsernameFromFirestore
+                Toast.makeText(requireContext(), "Failed to retrieve username", Toast.LENGTH_SHORT).show()
+                return@getUsernameAndProfileImgFromFirestore
             } else {
-                profileBinding.profileUsername.text = username.toString()
+                profileBinding.profileUsername.text = username
+                // Set profile image based on profileImg number
+                val imageResId = profileImg ?: R.drawable.placeholder // Replace with your default image resource
+                setProfileImage(imageResId)
             }
         }
 
@@ -71,19 +72,33 @@ class ProfileFragment : Fragment() {
         return view
     }
 
-    fun getUsernameFromFirestore(email: String, callback: (String?) -> Unit) {
+    fun getUsernameAndProfileImgFromFirestore(email: String, callback: (String?, Int?) -> Unit) {
         firestore.collection("users")
             .whereEqualTo("email", email)
             .get()
             .addOnSuccessListener { querySnapshot ->
-                val username = querySnapshot.documents.firstOrNull()?.getString("username")
-                Log.d("ShowReviewActivity", "Username query result: $username")
-                callback(username)
+                val document = querySnapshot.documents.firstOrNull()
+                val username = document?.getString("username")
+                val profileImg = document?.getLong("profileImg")?.toInt() ?: 0 // Default to 0 if not found
+                Log.d("ProfileFragment", "Username: $username, ProfileImg: $profileImg")
+                callback(username, profileImg)
             }
             .addOnFailureListener {
-                Log.e("ShowReviewActivity", "Error fetching username", it)
-                callback(null)
+                Log.e("ProfileFragment", "Error fetching username and profileImg", it)
+                callback(null, null)
             }
+    }
+
+    private fun setProfileImage(profileImg: Int) {
+        // Map profileImg number to a drawable resource
+        val imageRes = when (profileImg) {
+            0 -> R.drawable.placeholder
+            1 -> R.drawable.armin
+            2 -> R.drawable.levi
+            3 -> R.drawable.mikasa
+            else -> R.drawable.placeholder // Fallback to default if invalid
+        }
+        profileBinding.imageView3.setImageResource(imageRes)
     }
 
     private fun logoutUser() {
@@ -96,7 +111,6 @@ class ProfileFragment : Fragment() {
         }
     }
 
-
     private fun navigateToLoginScreen() {
         val intent = Intent(requireContext(), LoginActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -104,6 +118,4 @@ class ProfileFragment : Fragment() {
         startActivity(intent)
         requireActivity().finish()
     }
-
-
 }

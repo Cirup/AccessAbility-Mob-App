@@ -1,14 +1,12 @@
 package com.mco.accessability.models
 
-
 data class MarkerData(
-    var nameOfPlace: String = "",  // Default empty string for nameOfPlace
-    var imageres: Int = 0,        // Default value for image resource
-    var lat: Double = 0.0,        // Default value for latitude
-    var lng: Double = 0.0,        // Default value for longitude
-    var rating: Int = 0,          // Default rating is 0 (unrated)
-    var notes: List<String> = emptyList() // Default empty list for notes
+    var nameOfPlace: String = "",
+    var imageres: Int = 0,
+    var lat: Double = 0.0,
+    var lng: Double = 0.0,
+    val ratings: List<UserRating> = listOf(), // Replace Pair with UserRating
+    var notes: List<String> = emptyList()
 ) {
-    // No-argument constructor
-    constructor() : this("", 0, 0.0, 0.0, 0, emptyList())
+    constructor() : this("", 0, 0.0, 0.0, listOf(), emptyList())
 }
