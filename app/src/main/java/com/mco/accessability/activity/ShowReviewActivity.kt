@@ -16,6 +16,7 @@ import com.mco.accessability.databinding.ShowReviewLayoutBinding
 import com.mco.accessability.models.CombinedReviewModel
 import com.mco.accessability.models.MarkerData
 import com.mco.accessability.models.ReviewModel
+import com.mco.accessability.models.UserRating
 
 class ShowReviewActivity : AppCompatActivity() {
     private lateinit var binding: ShowReviewLayoutBinding
@@ -116,10 +117,20 @@ class ShowReviewActivity : AppCompatActivity() {
 
                                 Log.d("ShowReviewActivity", "Matching Markers Count: ${matchingMarkers.size}")
 
+
+
+
                                 matchingMarkers.map { marker ->
+
+                                    val averageRating = if (marker.ratings.isNotEmpty()) {
+                                        marker.ratings.map { it.rating }.average().toFloat()
+                                    } else {
+                                        0f
+                                    }
+
                                     CombinedReviewModel(
                                         placeName = marker.nameOfPlace,
-                                        placeRating = marker.rating,
+                                        placeRating = averageRating,
                                         reviewNotes = review.notes,
                                         author = review.author
                                     )
@@ -144,6 +155,8 @@ class ShowReviewActivity : AppCompatActivity() {
                 }
         }
     }
+
+
 
     // Username retrieval method remains the same
     private fun getUsernameFromFirestore(email: String, callback: (String?) -> Unit) {

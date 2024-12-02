@@ -48,6 +48,8 @@ import com.mco.accessability.adapter.SuggestionsAdapter
 import com.mco.accessability.databinding.BottomDialogBinding
 import com.mco.accessability.databinding.FragmentMapBinding
 import com.mco.accessability.models.MarkerData
+import com.mco.accessability.models.UserRating
+
 
 import com.mco.accessability.models.ReviewModel
 
@@ -191,75 +193,80 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 val markerName = etMarkerName.text.toString().ifBlank { "New Marker" }
                 val noteText = etNote.text.toString()
 
-                // Query Firestore to check if the marker name already exists
+                // Get the selected rating from the RadioGroup
+                val selectedRating = dialogView.findViewById<RadioGroup>(R.id.rg_rating)
+                    .checkedRadioButtonId.let { id ->
+                        dialogView.findViewById<RadioButton>(id).text.toString().toInt()
+                    }
+
                 val db = FirebaseFirestore.getInstance()
                 db.collection("marker")
-                    .whereEqualTo("nameOfPlace", markerName)  // Check if a marker with this name exists
+                    .whereEqualTo("nameOfPlace", markerName)
                     .get()
                     .addOnSuccessListener { result ->
                         if (result.isEmpty) {
-                            // No existing marker with the same name, proceed with adding the new marker
+                            // If marker does not exist, create a new one
                             val markerData = MarkerData(
                                 nameOfPlace = markerName,
                                 lat = latLng.latitude,
                                 lng = latLng.longitude,
-                                imageres = R.drawable.placeholder // Placeholder image ID
+                                imageres = R.drawable.placeholder,
+                                ratings = listOf(UserRating(username, selectedRating)) // Replace Pair with UserRating
                             )
 
                             if (noteText.isNotBlank()) {
                                 val review = ReviewModel(
-                                    author = username,  // Use the retrieved username
+                                    author = username,
                                     notes = noteText,
-                                    imageId = R.drawable.placeholder, // Placeholder image ID
-                                    rating = 0 // Default rating
+                                    imageId = R.drawable.placeholder,
+                                    rating = selectedRating
                                 )
 
-                                db.collection("review")
-                                    .add(review)
-                                    .addOnSuccessListener { reviewRef ->
-                                        val reviewId = reviewRef.id
-                                        Log.d("MapFragment", "Review added with ID: $reviewId")
+                                db.collection("review").add(review).addOnSuccessListener { reviewRef ->
+                                    val reviewId = reviewRef.id
+                                    markerData.notes = listOf(reviewId)
 
-                                        markerData.notes = listOf(reviewId)
-
-                                        db.collection("marker")  // Corrected collection name
-                                            .add(markerData)
-                                            .addOnSuccessListener { markerRef ->
-                                                Log.d("MapFragment", "Marker added with ID: ${markerRef.id}")
-                                                addMarkerToMap(markerData, markerRef.id)
-                                                dialog.dismiss()
-                                            }
-                                            .addOnFailureListener { e ->
-                                                Log.d("MapFragment", "Failed to add marker: ${e.message}")
-                                                Toast.makeText(requireContext(), "Failed to add marker", Toast.LENGTH_SHORT).show()
-                                            }
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.d("MapFragment", "Failed to add review: ${e.message}")
-                                        Toast.makeText(requireContext(), "Failed to add review", Toast.LENGTH_SHORT).show()
-                                    }
-                            } else {
-                                // Add marker without review
-                                db.collection("marker")
-                                    .add(markerData)
-                                    .addOnSuccessListener { markerRef ->
-                                        Log.d("MapFragment", "Marker without review added with ID: ${markerRef.id}")
+                                    db.collection("marker").add(markerData).addOnSuccessListener { markerRef ->
+                                        Log.d("MapFragment", "Marker added with ID: ${markerRef.id}")
                                         addMarkerToMap(markerData, markerRef.id)
                                         dialog.dismiss()
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.d("MapFragment", "Failed to add marker: ${e.message}")
+                                    }.addOnFailureListener { e ->
                                         Toast.makeText(requireContext(), "Failed to add marker", Toast.LENGTH_SHORT).show()
+                                        Log.e("MapFragment", "Failed to add marker: ${e.message}")
                                     }
+                                }.addOnFailureListener { e ->
+                                    Toast.makeText(requireContext(), "Failed to add review", Toast.LENGTH_SHORT).show()
+                                    Log.e("MapFragment", "Failed to add review: ${e.message}")
+                                }
+                            } else {
+                                db.collection("marker").add(markerData).addOnSuccessListener { markerRef ->
+                                    Log.d("MapFragment", "Marker added with ID: ${markerRef.id}")
+                                    addMarkerToMap(markerData, markerRef.id)
+                                    dialog.dismiss()
+                                }.addOnFailureListener { e ->
+                                    Toast.makeText(requireContext(), "Failed to add marker", Toast.LENGTH_SHORT).show()
+                                    Log.e("MapFragment", "Failed to add marker: ${e.message}")
+                                }
                             }
                         } else {
-                            // Marker name already exists
-                            Toast.makeText(requireContext(), "A marker with this name already exists. Please choose a different name.", Toast.LENGTH_SHORT).show()
+                            // If marker exists, update ratings
+                            val document = result.documents.first()
+                            val markerData = document.toObject(MarkerData::class.java)
+
+                            if (markerData != null) {
+                                val updatedRatings = markerData.ratings + UserRating(username, selectedRating) // Replace Pair with UserRating
+                                document.reference.update("ratings", updatedRatings).addOnSuccessListener {
+                                    Log.d("MapFragment", "Rating updated for marker: $markerName")
+                                    dialog.dismiss()
+                                }.addOnFailureListener { e ->
+                                    Toast.makeText(requireContext(), "Failed to update ratings", Toast.LENGTH_SHORT).show()
+                                    Log.e("MapFragment", "Failed to update ratings: ${e.message}")
+                                }
+                            }
                         }
-                    }
-                    .addOnFailureListener { exception ->
-                        Log.d("MapFragment", "Error checking marker name: ${exception.message}")
-                        Toast.makeText(requireContext(), "Failed to check marker name", Toast.LENGTH_SHORT).show()
+                    }.addOnFailureListener { e ->
+                        Toast.makeText(requireContext(), "Failed to fetch marker data", Toast.LENGTH_SHORT).show()
+                        Log.e("MapFragment", "Failed to fetch marker data: ${e.message}")
                     }
             }
 
@@ -270,6 +277,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             dialog.show()
         }
     }
+
 
 
 
@@ -364,30 +372,129 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun showMarkerPopup(markerData: MarkerData) {
         Log.d("MapFragment", "showMarkerPopup")
 
-        // Show BottomSheet Dialog
         bottomSheetDialog = BottomSheetDialog(requireContext())
         val bottomSheetView = layoutInflater.inflate(R.layout.bottom_dialog, null)
         bottomSheetDialog.setContentView(bottomSheetView)
 
-        // Set the marker name in the popup
         bottomSheetView.findViewById<TextView>(R.id.markername).text = markerData.nameOfPlace
 
-        // Initialize RecyclerView and Adapter
+        val averageRating = if (markerData.ratings.isNotEmpty()) {
+            markerData.ratings.map { it.rating }.average().toFloat()
+        } else {
+            0f
+        }
+        bottomSheetView.findViewById<TextView>(R.id.rate).text = String.format("%.1f", averageRating)
+
         val recyclerView = bottomSheetView.findViewById<RecyclerView>(R.id.rcv_dialog)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         val adapter = DialogPostAdapter(arrayListOf())
         recyclerView.adapter = adapter
 
-        // Load Reviews
         loadReviews(markerData, adapter)
 
-        // Handle Add Review button
+        val auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+
+        val currentUserEmail = currentUser?.email ?: "Anonymous"
+
+        // Fetch username and set the checked radio button
+        getUsernameFromFirestore(currentUserEmail) { username ->
+            if (username != null) {
+                // Find the current user's rating
+                val userRating = markerData.ratings.find { it.username == username }?.rating ?: 0
+
+                // Check the corresponding radio button
+                val radioGroup = bottomSheetView.findViewById<RadioGroup>(R.id.rg_rating)
+                when (userRating) {
+                    1 -> bottomSheetView.findViewById<RadioButton>(R.id.rb_star_1).isChecked = true
+                    2 -> bottomSheetView.findViewById<RadioButton>(R.id.rb_star_2).isChecked = true
+                    3 -> bottomSheetView.findViewById<RadioButton>(R.id.rb_star_3).isChecked = true
+                    4 -> bottomSheetView.findViewById<RadioButton>(R.id.rb_star_4).isChecked = true
+                    5 -> bottomSheetView.findViewById<RadioButton>(R.id.rb_star_5).isChecked = true
+                }
+
+                // Handle new rating selection
+                radioGroup.setOnCheckedChangeListener { _, checkedId ->
+                    val newRating = when (checkedId) {
+                        R.id.rb_star_1 -> 1
+                        R.id.rb_star_2 -> 2
+                        R.id.rb_star_3 -> 3
+                        R.id.rb_star_4 -> 4
+                        R.id.rb_star_5 -> 5
+                        else -> 0
+                    }
+                    if (newRating != 0) {
+                        updateUserRating(markerData, username, newRating)
+                    }
+                }
+            } else {
+                Log.d("MapFragment", "Username not found")
+            }
+        }
+
         bottomSheetView.findViewById<Button>(R.id.btnAddReview).setOnClickListener {
             handleAddReview(markerData, bottomSheetView, adapter)
         }
 
         bottomSheetDialog.show()
     }
+
+    private fun updateUserRating(markerData: MarkerData, username: String, newRating: Int) {
+
+        val auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+
+        if (currentUser == null || username == "Anonymous") {
+            Toast.makeText(requireContext(), "You need to log in to add or update rating", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val db = FirebaseFirestore.getInstance()
+
+        // Query Firestore to find the marker document by nameOfPlace
+        val markerRef = db.collection("marker").whereEqualTo("nameOfPlace", markerData.nameOfPlace)
+
+        markerRef.get().addOnSuccessListener { querySnapshot ->
+            if (!querySnapshot.isEmpty) {
+                // Assuming nameOfPlace is unique in the collection, we get the first document
+                val document = querySnapshot.documents[0]
+                val marker = document.toObject(MarkerData::class.java)
+
+                if (marker != null) {
+                    // Create a new list with the updated or added rating
+                    val updatedRatings = marker.ratings.toMutableList()
+
+                    // Find if the rating already exists
+                    val existingRatingIndex = updatedRatings.indexOfFirst { it.username == username }
+
+                    if (existingRatingIndex != -1) {
+                        // Rating already exists, update it
+                        updatedRatings[existingRatingIndex] = updatedRatings[existingRatingIndex].copy(rating = newRating)
+                    } else {
+                        // Rating does not exist, add a new rating
+                        updatedRatings.add(UserRating(username, newRating))
+                    }
+
+                    // Replace the old marker with a new one that has the updated ratings
+                    val updatedMarker = marker.copy(ratings = updatedRatings.toList()) // Convert back to List<UserRating>
+
+                    // Save the updated marker back to Firestore
+                    document.reference.set(updatedMarker)
+                        .addOnSuccessListener {
+                            Log.d("MapFragment", "Rating updated successfully")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.d("MapFragment", "Failed to update rating: ${e.message}")
+                        }
+                }
+            } else {
+                Log.d("MapFragment", "Marker not found for nameOfPlace: ${markerData.nameOfPlace}")
+            }
+        }.addOnFailureListener { e ->
+            Log.d("MapFragment", "Failed to retrieve marker: ${e.message}")
+        }
+    }
+
 
     private fun loadReviews(markerData: MarkerData, adapter: DialogPostAdapter) {
         Log.d("MapFragment", "loadReviews")
