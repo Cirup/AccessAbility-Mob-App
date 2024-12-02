@@ -13,6 +13,7 @@ class DialogViewHolder(private val viewBinding: ItemNotesLayoutBinding): Recycle
     private val db = FirebaseFirestore.getInstance()
     val currentUser = FirebaseAuth.getInstance().currentUser
     val isLoggedIn = currentUser?.uid != null
+    val firestore = FirebaseFirestore.getInstance()
 
     fun bindData(notes: ReviewModel) {
         val reviewRef = db.collection("review").document(notes.id)
@@ -46,7 +47,20 @@ class DialogViewHolder(private val viewBinding: ItemNotesLayoutBinding): Recycle
         // Existing code for setting up the buttons
         this.viewBinding.author.text = notes.author
         this.viewBinding.notes.text = notes.notes
-        this.viewBinding.userImage.setImageResource(notes.imageId)
+        //this.viewBinding.userImage.setImageResource(notes.imageId)
+
+        // Fetch profile image from Firestore using the current user's email
+        notes.author.let { username ->
+            getProfileImgFromFirestore(username) { profileImg ->
+                // Set profile image using the profileImg value
+                profileImg?.let {
+                    setProfileImage(it) // Set the image using the profile image ID
+                } ?: run {
+                    // Handle case when profileImg is null or not found
+                    viewBinding.userImage.setImageResource(R.drawable.placeholder) // Default image
+                }
+            }
+        }
 
         viewBinding.btnUpvote.setOnClickListener {
             if (isLoggedIn) {
@@ -61,7 +75,32 @@ class DialogViewHolder(private val viewBinding: ItemNotesLayoutBinding): Recycle
         }
     }
 
+    fun getProfileImgFromFirestore(username: String, callback: (Int?) -> Unit) {
+        firestore.collection("users")
+            .whereEqualTo("username", username)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val document = querySnapshot.documents.firstOrNull()
+                val profileImg = document?.getLong("profileImg")?.toInt() ?: 0 // Default to 0 if not found
+                callback(profileImg)
+            }
+            .addOnFailureListener {
+                Log.e("ProfileFragment", "Error fetching username and profileImg", it)
+                callback(null)
+            }
+    }
 
+    private fun setProfileImage(profileImg: Int) {
+        // Map profileImg number to a drawable resource
+        val imageRes = when (profileImg) {
+            0 -> R.drawable.placeholder
+            1 -> R.drawable.armin
+            2 -> R.drawable.levi
+            3 -> R.drawable.mikasa
+            else -> R.drawable.placeholder // Fallback to default if invalid
+        }
+        viewBinding.userImage.setImageResource(imageRes)
+    }
 
     private fun updateVoteButtonIcons(
         btnUpvote: ImageButton,
