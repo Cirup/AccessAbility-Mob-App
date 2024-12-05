@@ -89,17 +89,31 @@ class ProfileFragment : Fragment() {
             }
     }
 
+
     private fun setProfileImage(profileImg: Int) {
         // Map profileImg number to a drawable resource
         val imageRes = when (profileImg) {
-            0 -> R.drawable.placeholder
-            1 -> R.drawable.armin
-            2 -> R.drawable.levi
-            3 -> R.drawable.mikasa
-            else -> R.drawable.placeholder // Fallback to default if invalid
+            0 -> R.drawable.pfp_1
+            1 -> R.drawable.pfp_2
+            2 -> R.drawable.pfp_3
+            3 -> R.drawable.pfp_4
+            4 -> R.drawable.pfp_5
+            5 -> R.drawable.pfp_6
+            6 -> R.drawable.pfp_7
+            7 -> R.drawable.pfp_8
+            8 -> R.drawable.pfp_9
+            9 -> R.drawable.pfp_10
+            10 -> R.drawable.pfp_11
+            11 -> R.drawable.pfp_12
+            12 -> R.drawable.pfp_13
+            13 -> R.drawable.pfp_14
+            14 -> R.drawable.pfp_15
+            15 -> R.drawable.pfp_16
+            else -> R.drawable.pfp_1 // Fallback to default if invalid
         }
         profileBinding.imageView3.setImageResource(imageRes)
     }
+
 
     private fun logoutUser() {
         try {
