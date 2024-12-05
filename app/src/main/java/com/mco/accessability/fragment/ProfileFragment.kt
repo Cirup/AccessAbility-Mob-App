@@ -57,15 +57,14 @@ class ProfileFragment : Fragment() {
             logoutUser()
         }
 
-        profileBinding.reviewButtonLayout.setOnClickListener{
-            if (currentUser != null) { // if already logged in go to maps
+        profileBinding.reviewButtonLayout.setOnClickListener {
+            if (currentUser != null) {
                 val intent = Intent(requireContext(), ShowReviewActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(intent)
-                requireActivity().finish()
-            } else { // if not logged in go to login page
+            } else {
                 val intent = Intent(requireContext(), LoginActivity::class.java)
                 startActivity(intent)
-                requireActivity().finish()
             }
         }
 
