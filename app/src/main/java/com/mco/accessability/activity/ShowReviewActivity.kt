@@ -1,5 +1,7 @@
 package com.mco.accessability.activity
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -8,15 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.mco.accessability.R
 import com.mco.accessability.adapter.ShowReviewAdapter
-
 import com.mco.accessability.databinding.ShowReviewLayoutBinding
+import com.mco.accessability.fragment.ProfileFragment
 import com.mco.accessability.models.CombinedReviewModel
 import com.mco.accessability.models.MarkerData
 import com.mco.accessability.models.ReviewModel
-import com.mco.accessability.models.UserRating
 
 class ShowReviewActivity : AppCompatActivity() {
     private lateinit var binding: ShowReviewLayoutBinding
@@ -28,6 +29,13 @@ class ShowReviewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ShowReviewLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Set up OnBackPressedCallback
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                finish()
+            }
+        })
 
         // Initialize the adapter
         val combinedReviewList = mutableListOf<CombinedReviewModel>()
@@ -173,5 +181,17 @@ class ShowReviewActivity : AppCompatActivity() {
                 callback(null)
             }
     }
+
+//    override fun onBackPressed() {
+//        // Check if there are fragments in the back stack
+//        if (supportFragmentManager.backStackEntryCount > 0) {
+//            // Pop the last fragment from the back stack
+//            supportFragmentManager.popBackStack()
+//        } else {
+//            // No fragments in the back stack, finish the activity
+//            super.onBackPressed()
+//        }
+//    }
+
 
 }
