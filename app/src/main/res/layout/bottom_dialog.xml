@@ -85,52 +85,61 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="16dp">
+        android:orientation="vertical"
+        android:paddingTop="4dp">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
+            android:text="How would you rate this place?"
+            android:textSize="16sp" />
+
         <RadioGroup
             android:id="@+id/rg_rating"
-            android:layout_width="321dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:gravity="center_horizontal"
             android:orientation="horizontal">
 
-        <RadioButton
-            android:id="@+id/rb_star_1"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="4dp"
-            android:background="@drawable/rating_buttons"
-            android:button="@android:color/transparent"
-            android:gravity="center"
-            android:paddingLeft="16dp"
-            android:paddingTop="2dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="2dp"
-            android:text="1"
-            android:textColor="@drawable/radio_text_selector"
-            tools:ignore="TouchTargetSizeCheck" />
+            <RadioButton
+                android:id="@+id/rb_star_1"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/rating_buttons"
+                android:button="@android:color/transparent"
+                android:gravity="center"
+                android:paddingLeft="16dp"
+                android:paddingTop="2dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="2dp"
+                android:text="1"
+                android:textColor="@drawable/radio_text_selector"
+                tools:ignore="TouchTargetSizeCheck" />
 
-        <RadioButton
-            android:id="@+id/rb_star_2"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="4dp"
-            android:background="@drawable/rating_buttons"
-            android:button="@android:color/transparent"
-            android:checked="false"
-            android:gravity="center"
-            android:paddingLeft="16dp"
-            android:paddingTop="2dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="2dp"
-            android:text="2"
-            android:textColor="@drawable/radio_text_selector"
-            tools:ignore="TouchTargetSizeCheck" />
+            <RadioButton
+                android:id="@+id/rb_star_2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/rating_buttons"
+                android:button="@android:color/transparent"
+                android:checked="false"
+                android:gravity="center"
+                android:paddingLeft="16dp"
+                android:paddingTop="2dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="2dp"
+                android:text="2"
+                android:textColor="@drawable/radio_text_selector"
+                tools:ignore="TouchTargetSizeCheck" />
 
             <RadioButton
                 android:id="@+id/rb_star_3"
@@ -188,12 +197,11 @@
     </LinearLayout>
 
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="16dp">
+        android:paddingTop="0dp">
 
         <EditText
             android:id="@+id/editTextText"
@@ -204,8 +212,8 @@
             android:background="@drawable/customized_add_notes"
             android:elevation="8dp"
             android:ems="10"
-            android:inputType="text"
             android:hint="Add Note"
+            android:inputType="text"
             android:textColor="@color/no_rating"
             android:textSize="14sp"
             tools:ignore="TouchTargetSizeCheck" />
